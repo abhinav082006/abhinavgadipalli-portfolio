@@ -59,7 +59,7 @@ portfolio/
 1. Add your photo file to the same folder as `index.html`
 2. Open `index.html` and find:
    ```html
-   <img src="my photo resized.png" alt="Gadipalli Abhinav">
+   <img src="myphoto.png" alt="Gadipalli Abhinav">
    ```
 3. Replace `your-photo.jpg` with your actual filename
 4. Recommended photo size: **800 × 900px** (portrait)
