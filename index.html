@@ -4,160 +4,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gadipalli Abhinav | Portfolio</title>
+<meta name="description" content="Gadipalli Abhinav — Computer Science student at IIIT Kottayam building web apps, Chrome extensions and AI-powered tools.">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<style>
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --bg:#08080f;
-  --surface:#0e0e1c;
-  --card:#13132280;
-  --border:#ffffff15;
-  --accent:#00c9a7;
-  --accent2:#7c3aed;
-  --text:#e4e4f0;
-  --muted:#7777a0;
-  --fh:'Syne',sans-serif;
-  --fb:'Outfit',sans-serif;
-}
-html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text);font-family:var(--fb);line-height:1.7;overflow-x:hidden}
-body::before{
-  content:'';position:fixed;inset:0;
-  background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);
-  background-size:64px 64px;pointer-events:none;z-index:0
-}
-.glow-orb{position:fixed;pointer-events:none;z-index:0;border-radius:50%}
-.glow-orb-1{top:-200px;right:-200px;width:700px;height:700px;background:radial-gradient(circle,#7c3aed18 0%,transparent 70%)}
-.glow-orb-2{bottom:-100px;left:-200px;width:500px;height:500px;background:radial-gradient(circle,#00c9a712 0%,transparent 70%)}
 
-/* NAV */
-nav{position:fixed;top:0;width:100%;z-index:100;padding:1rem 2.5rem;display:flex;align-items:center;justify-content:space-between;background:rgba(8,8,15,0.82);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
-.nav-logo{font-family:var(--fh);font-size:1.4rem;font-weight:800;color:var(--accent);text-decoration:none;letter-spacing:-0.02em}
-.nav-links{display:flex;gap:2.2rem;list-style:none}
-.nav-links a{color:var(--muted);text-decoration:none;font-size:0.88rem;font-weight:500;letter-spacing:0.04em;transition:color 0.3s;position:relative}
-.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1px;background:var(--accent);transition:width 0.3s}
-.nav-links a:hover{color:var(--accent)}
-.nav-links a:hover::after{width:100%}
-
-/* HERO */
-#hero{min-height:100vh;display:flex;align-items:center;padding:7rem 2.5rem 4rem;position:relative;z-index:1;max-width:1100px;margin:0 auto}
-.hero-content{max-width:720px}
-.hero-badge{display:inline-flex;align-items:center;gap:0.5rem;padding:0.4rem 1.1rem;border:1px solid var(--accent)66;border-radius:100px;font-size:0.78rem;color:var(--accent);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:1.8rem;animation:fadeUp 0.7s ease both}
-.pulse{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 0 var(--accent)66}50%{box-shadow:0 0 0 6px transparent}}
-.hero-name{font-family:var(--fh);font-size:clamp(3rem,7vw,5.5rem);font-weight:800;line-height:1.02;margin-bottom:1rem;letter-spacing:-0.03em;animation:fadeUp 0.7s 0.1s ease both}
-.hero-name span{background:linear-gradient(135deg,var(--accent),#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.hero-sub{font-size:1.15rem;color:var(--muted);margin-bottom:1.8rem;animation:fadeUp 0.7s 0.2s ease both}
-.hero-desc{font-size:1rem;color:#8888aa;max-width:540px;margin-bottom:2.8rem;animation:fadeUp 0.7s 0.3s ease both}
-.hero-btns{display:flex;gap:1rem;flex-wrap:wrap;animation:fadeUp 0.7s 0.4s ease both}
-.btn{padding:0.82rem 2rem;border-radius:10px;font-family:var(--fb);font-size:0.95rem;font-weight:500;cursor:pointer;text-decoration:none;transition:all 0.3s;display:inline-block}
-.btn-primary{background:var(--accent);color:#000;border:none;font-weight:600}
-.btn-primary:hover{background:#00efcc;transform:translateY(-3px);box-shadow:0 10px 30px var(--accent)33}
-.btn-secondary{background:transparent;color:var(--text);border:1px solid var(--border)}
-.btn-secondary:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-3px)}
-.hero-scroll{margin-top:4rem;display:flex;align-items:center;gap:0.7rem;color:var(--muted);font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;animation:fadeUp 0.7s 0.6s ease both}
-.scroll-line{width:40px;height:1px;background:var(--muted)}
-
-/* WRAPPER */
-.wrapper{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:5rem 2.5rem}
-.section-label{font-size:0.72rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:0.5rem}
-.section-title{font-family:var(--fh);font-size:clamp(1.9rem,3.5vw,2.9rem);font-weight:700;margin-bottom:3rem;color:var(--text);letter-spacing:-0.02em}
-.section-title span{background:linear-gradient(135deg,var(--accent),#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-
-/* ABOUT */
-.about-grid{display:grid;grid-template-columns:220px 1fr;gap:4rem;align-items:center}
-.about-avatar-wrap{display:flex;justify-content:center}
-.about-avatar{width:190px;height:190px;border-radius:32px;overflow:hidden;position:relative;border:2px solid var(--accent)55}
-.about-avatar::after{content:'';position:absolute;inset:-4px;border-radius:28px;background:linear-gradient(135deg,var(--accent),#7c3aed);z-index:-1;opacity:0.4;filter:blur(16px)}
-.about-text p{color:#8888aa;margin-bottom:1rem;font-size:0.97rem}
-.edu-card{margin-top:1.5rem;padding:1.2rem 1.5rem;background:rgba(0,201,167,0.06);border:1px solid var(--accent)33;border-radius:14px;border-left:3px solid var(--accent)}
-.edu-card h4{font-family:var(--fh);font-weight:600;font-size:1rem;color:var(--text);margin-bottom:0.25rem}
-.edu-card .inst{color:var(--muted);font-size:0.85rem;margin:0}
-.edu-card .year{color:var(--accent);font-size:0.82rem;margin:0.25rem 0 0;font-weight:500}
-
-/* SKILLS */
-.skills-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.25rem}
-.skill-cat{background:rgba(19,19,34,0.7);border:1px solid var(--border);border-radius:18px;padding:1.5rem;backdrop-filter:blur(8px);transition:border-color 0.3s}
-.skill-cat:hover{border-color:var(--accent)44}
-.skill-cat h3{font-family:var(--fh);font-size:0.78rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem}
-.skill-tags{display:flex;flex-wrap:wrap;gap:0.45rem}
-.skill-tag{padding:0.28rem 0.85rem;background:#ffffff08;border:1px solid var(--border);border-radius:100px;font-size:0.8rem;color:var(--text);transition:all 0.2s;cursor:default}
-.skill-tag:hover{background:var(--accent);color:#000;border-color:var(--accent);transform:scale(1.04)}
-
-/* PROJECTS */
-.projects-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:1.5rem}
-.project-card{background:rgba(19,19,34,0.7);border:1px solid var(--border);border-radius:22px;padding:2rem;transition:all 0.35s;position:relative;overflow:hidden;backdrop-filter:blur(8px)}
-.project-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),#7c3aed);opacity:0;transition:opacity 0.35s}
-.project-card:hover::before{opacity:1}
-.project-card:hover{border-color:var(--accent)33;transform:translateY(-6px);box-shadow:0 20px 60px rgba(0,0,0,0.4)}
-.proj-icon{width:50px;height:50px;border-radius:14px;background:var(--accent)18;border:1px solid var(--accent)33;display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:1.3rem;color:var(--accent)}
-.project-card h3{font-family:var(--fh);font-size:1.22rem;font-weight:700;color:var(--text);margin-bottom:0.3rem;letter-spacing:-0.01em}
-.proj-date{font-size:0.76rem;color:var(--muted);margin-bottom:0.9rem;display:flex;align-items:center;gap:0.4rem}
-.project-card p{color:#7777a0;font-size:0.9rem;line-height:1.75;margin-bottom:1.3rem}
-.proj-tech{display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:1.6rem}
-.tech-tag{padding:0.22rem 0.75rem;background:rgba(124,58,237,0.15);border:1px solid rgba(124,58,237,0.3);border-radius:100px;font-size:0.74rem;color:#b89aff}
-.proj-link{display:inline-flex;align-items:center;gap:0.45rem;color:var(--accent);font-size:0.84rem;font-weight:600;text-decoration:none;letter-spacing:0.02em;transition:gap 0.25s}
-.proj-link:hover{gap:0.8rem}
-
-/* TIMELINE */
-.timeline{position:relative;padding-left:2rem}
-.timeline::before{content:'';position:absolute;left:0;top:0;bottom:0;width:1px;background:linear-gradient(to bottom,var(--accent),#7c3aed,transparent)}
-.tl-item{position:relative;margin-bottom:2.8rem}
-.tl-dot{position:absolute;left:-2.38rem;top:0.45rem;width:12px;height:12px;background:var(--accent);border-radius:50%;border:2px solid var(--bg);box-shadow:0 0 0 4px var(--accent)33}
-.tl-date{font-size:0.75rem;color:var(--accent);letter-spacing:0.12em;font-weight:600;text-transform:uppercase;margin-bottom:0.3rem}
-.tl-title{font-family:var(--fh);font-size:1.12rem;font-weight:700;color:var(--text);margin-bottom:0.2rem}
-.tl-org{font-size:0.88rem;color:var(--muted);margin-bottom:0.5rem}
-.tl-desc{font-size:0.87rem;color:#6666a0;line-height:1.8}
-
-/* CONTACT */
-.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start}
-.contact-intro h3{font-family:var(--fh);font-size:1.6rem;font-weight:700;color:var(--text);margin-bottom:0.8rem;letter-spacing:-0.02em}
-.contact-intro p{color:var(--muted);font-size:0.95rem;margin-bottom:2rem;line-height:1.8}
-.contact-links{display:flex;flex-direction:column;gap:0.9rem}
-.c-link{display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem;background:rgba(19,19,34,0.7);border:1px solid var(--border);border-radius:14px;text-decoration:none;transition:all 0.3s;backdrop-filter:blur(8px)}
-.c-link:hover{border-color:var(--accent)55;transform:translateX(5px)}
-.c-icon{width:42px;height:42px;border-radius:11px;background:var(--accent)12;border:1px solid var(--accent)33;display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:1rem;flex-shrink:0}
-.c-info p:first-child{font-weight:500;color:var(--text);font-size:0.88rem;margin:0}
-.c-info p:last-child{color:var(--muted);font-size:0.78rem;margin:0}
-.contact-card{background:rgba(19,19,34,0.7);border:1px solid var(--border);border-radius:22px;padding:2.5rem;text-align:center;backdrop-filter:blur(8px)}
-.contact-card-icon{font-size:3.5rem;margin-bottom:1.2rem}
-.contact-card h4{font-family:var(--fh);font-size:1.3rem;font-weight:700;color:var(--text);margin-bottom:0.8rem}
-.contact-card p{color:var(--muted);font-size:0.88rem;margin-bottom:2rem;line-height:1.8}
-
-/* FOOTER */
-footer{position:relative;z-index:1;border-top:1px solid var(--border);padding:2rem 2.5rem;text-align:center;color:var(--muted);font-size:0.83rem}
-footer .name{color:var(--accent);font-weight:600}
-footer .sub{margin-top:0.3rem;font-size:0.74rem;opacity:0.7}
-
-/* ANIMATIONS */
-@keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
-.reveal{opacity:0;transform:translateY(32px);transition:opacity 0.75s ease,transform 0.75s ease}
-.reveal.visible{opacity:1;transform:translateY(0)}
-
-/* SCROLLBAR */
-::-webkit-scrollbar{width:4px}
-::-webkit-scrollbar-track{background:var(--bg)}
-::-webkit-scrollbar-thumb{background:var(--accent)55;border-radius:10px}
-
-/* RESPONSIVE */
-@media(max-width:768px){
-  .about-grid,.contact-grid{grid-template-columns:1fr}
-  .nav-links{display:none}
-  #hero{padding:7rem 1.5rem 3rem}
-  .wrapper{padding:4rem 1.5rem}
-  .projects-grid{grid-template-columns:1fr}
-}
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="glow-orb glow-orb-1"></div>
-<div class="glow-orb glow-orb-2"></div>
-
 <!-- NAV -->
-<nav>
+<nav id="nav">
   <a href="#hero" class="nav-logo">AG.</a>
   <ul class="nav-links">
     <li><a href="#about">About</a></li>
@@ -166,42 +25,52 @@ footer .sub{margin-top:0.3rem;font-size:0.74rem;opacity:0.7}
     <li><a href="#experience">Experience</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
+  <a href="resume.pdf" target="_blank" class="oval-badge nav-resume">Resume <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:.68rem"></i></a>
 </nav>
 
 <!-- HERO -->
 <div id="hero">
   <div class="hero-content">
-    <div class="hero-badge"><span class="pulse"></span> Open to Internships & Collaborations</div>
-    <h1 class="hero-name">Gadipalli<br><span>Abhinav</span></h1>
-    <p class="hero-sub">Computer Science Student @ IIIT Kottayam</p>
-    <p class="hero-desc">Passionate about software development, AI tools, and web technologies.</p>
+    <div class="hero-badge oval-badge"><span class="dot"></span> Open to Internships &amp; Collaborations</div>
+    <h1 class="hero-name">Gadipalli<br><em>Abhinav</em></h1>
+    <p class="hero-sub">Computer Science Student · IIIT Kottayam</p>
+    <p class="hero-desc">I build web apps, browser extensions and small AI-powered tools — currently exploring software development, web technologies and practical uses for AI.</p>
     <div class="hero-btns">
       <a href="#projects" class="btn btn-primary">View Projects</a>
-      <a href="#contact" class="btn btn-secondary">Contact Me</a>
+      <a href="resume.pdf" download class="btn btn-secondary">Download Resume <i class="fa-solid fa-arrow-down"></i></a>
     </div>
     <div class="hero-scroll">
       <span class="scroll-line"></span>
       <span>Scroll to explore</span>
     </div>
   </div>
+
+  <div class="hero-portrait-wrap reveal">
+    <div class="hero-frame-stack">
+      <div class="hero-frame">
+        <div class="hero-frame-placeholder"><i class="fa-solid fa-user"></i></div>
+        <img src="myphoto.png" alt="Gadipalli Abhinav" onerror="this.style.display='none'">
+      </div>
+      <span class="oval-badge hero-loc">Kottayam, KL</span>
+      <span class="oval-badge hero-tag">B.Tech CSE</span>
+    </div>
+  </div>
 </div>
 
 <!-- ABOUT -->
- <div class="wrapper" id="about">
-  <div class="section-label reveal">Who I Am</div>
-  <h2 class="section-title reveal">About <span>Me</span></h2>
-  <div class="about-grid">
-    <div class="about-avatar-wrap reveal">
-      <div class="about-avatar">
-        <img src="myphoto.png" alt="Gadipalli Abhinav" onerror="this.style.opacity='0'">
-      </div>
+<div class="wrapper" id="about">
+  <div class="section-head">
+    <div>
+      <div class="oval-badge section-label reveal">Who I Am</div>
+      <h2 class="section-title reveal">About <em>Me</em></h2>
     </div>
-
+  </div>
+  <div class="about-grid">
     <div class="about-text reveal">
-      <p>Hey! I'm Abhinav ,  a Computer Science student at IIIT Kottayam with a genuine passion for building things that matter.</p>
-      <p>Currently exploring software development, web technologies, and AI tooling  and always on the lookout for exciting projects and collaborations.</p>
+      <p class="lede">Hey, I'm Abhinav — a Computer Science student at IIIT Kottayam with a genuine passion for building things that matter.</p>
+      <p>Currently exploring software development, web technologies and AI tooling, and always on the lookout for exciting projects and collaborations.</p>
       <div class="edu-card">
-        <h4>🎓 B.Tech — Computer Science & Engineering</h4>
+        <h4>🎓 B.Tech — Computer Science &amp; Engineering</h4>
         <p class="inst">Indian Institute of Information Technology Kottayam (IIIT Kottayam)</p>
         <p class="year">2024 — 2028 · Kottayam, Kerala</p>
       </div>
@@ -211,10 +80,15 @@ footer .sub{margin-top:0.3rem;font-size:0.74rem;opacity:0.7}
 
 <!-- SKILLS -->
 <div class="wrapper" id="skills">
-  <div class="section-label reveal">What I Know</div>
-  <h2 class="section-title reveal">Technical <span>Skills</span></h2>
-  <div class="skills-grid">
-    <div class="skill-cat reveal">
+  <div class="section-head">
+    <div>
+      <div class="oval-badge section-label reveal">What I Know</div>
+      <h2 class="section-title reveal">Technical <em>Skills</em></h2>
+    </div>
+    <p class="section-note reveal">Tools and languages I reach for most, grouped by how I use them.</p>
+  </div>
+  <div class="skills-list">
+    <div class="skill-row reveal">
       <h3>Languages</h3>
       <div class="skill-tags">
         <span class="skill-tag">Python</span>
@@ -223,7 +97,7 @@ footer .sub{margin-top:0.3rem;font-size:0.74rem;opacity:0.7}
         <span class="skill-tag">SQL</span>
       </div>
     </div>
-    <div class="skill-cat reveal">
+    <div class="skill-row reveal">
       <h3>Web Technologies</h3>
       <div class="skill-tags">
         <span class="skill-tag">HTML5</span>
@@ -231,7 +105,7 @@ footer .sub{margin-top:0.3rem;font-size:0.74rem;opacity:0.7}
         <span class="skill-tag">JavaScript</span>
       </div>
     </div>
-    <div class="skill-cat reveal">
+    <div class="skill-row reveal">
       <h3>Interests</h3>
       <div class="skill-tags">
         <span class="skill-tag">Software Dev</span>
@@ -239,13 +113,12 @@ footer .sub{margin-top:0.3rem;font-size:0.74rem;opacity:0.7}
         <span class="skill-tag">AI Tools</span>
       </div>
     </div>
-    <div class="skill-cat reveal">
-      <h3>Tools & Platforms</h3>
+    <div class="skill-row reveal">
+      <h3>Tools &amp; Platforms</h3>
       <div class="skill-tags">
         <span class="skill-tag">GitHub</span>
         <span class="skill-tag">REST APIs</span>
-        <span class="skill-tag">chrome extension APIs</span>
-
+        <span class="skill-tag">Chrome Extension APIs</span>
       </div>
     </div>
   </div>
@@ -253,110 +126,144 @@ footer .sub{margin-top:0.3rem;font-size:0.74rem;opacity:0.7}
 
 <!-- PROJECTS -->
 <div class="wrapper" id="projects">
-  <div class="section-label reveal">What I've Built</div>
-  <h2 class="section-title reveal">Featured <span>Projects</span></h2>
-  <div class="projects-grid">
+  <div class="section-head">
+    <div>
+      <div class="oval-badge section-label reveal">What I've Built</div>
+      <h2 class="section-title reveal">Featured <em>Projects</em></h2>
+    </div>
+    <p class="section-note reveal">A few things I've shipped recently — extensions, tools and full front-ends.</p>
+  </div>
 
-     <div class="project-card reveal">
+  <div class="projects-list">
+
+    <div class="project-row reveal">
       <div class="proj-icon"><i class="fa-solid fa-box"></i></div>
-      <h3>Trackezz</h3>
-      <div class="proj-date"><i class="fa-regular fa-calendar"></i> July 2026</div>
-      <p>Chrome extension for Indian students and job seekers that automatically imports and tracks job applications across major platforms. No manual entry — just apply and it handles the rest.</p>
-      <div class="proj-tech">
-        <span class="tech-tag">HTML</span>
-        <span class="tech-tag">CSS</span>
-        <span class="tech-tag">JavaScript</span>
-        <span class="tech-tag">Gmail API</span>
-        <span class="tech-tag">Chrome Extension APIs</span>
-        <span class="tech-tag">OAuth 2.0</span>
+      <div>
+        <div class="proj-head">
+          <h3>Trackezz</h3>
+          <span class="proj-date">July 2026</span>
+        </div>
+        <p>Chrome extension for Indian students and job seekers that automatically imports and tracks job applications across major platforms. No manual entry — just apply and it handles the rest.</p>
+        <div class="proj-tech">
+          <span class="tech-tag">HTML</span>
+          <span class="tech-tag">CSS</span>
+          <span class="tech-tag">JavaScript</span>
+          <span class="tech-tag">Gmail API</span>
+          <span class="tech-tag">Chrome Extension APIs</span>
+          <span class="tech-tag">OAuth 2.0</span>
+        </div>
+        <div class="proj-links">
+          <a href="https://github.com/abhinav082006/trackezz" target="_blank" class="proj-link"><i class="fa-brands fa-github"></i> View on GitHub <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:.68rem"></i></a>
+        </div>
       </div>
-      <a href="https://github.com/abhinav082006/trackezz" target="_blank" class="proj-link">View on GitHub <i class="fa-solid fa-arrow-right" style="font-size:0.75rem"></i></a>
     </div>
 
-    
-    <div class="project-card reveal">  
+    <div class="project-row reveal">
       <div class="proj-icon"><i class="fa-solid fa-qrcode"></i></div>
-      <h3>QR-Studio</h3>
-      <div class="proj-date"><i class="fa-regular fa-calendar"></i> June 2026</div>
-      <p>QR Studio — A customizable QR code generator built with HTML, CSS, and JavaScript. 
-        Lets users generate live QR codes from any text or URL, customize colors and size, embed a logo in the center, and export as PNG or SVG. 
-        Built as a free, no-signup tool for quick personal/professional use.</p>
-      <div class="proj-tech">
-        <span class="tech-tag">HTML</span>
-        <span class="tech-tag">CSS</span>
-        <span class="tech-tag">JavaScript</span>
+      <div>
+        <div class="proj-head">
+          <h3>QR Studio</h3>
+          <span class="proj-date">June 2026</span>
+        </div>
+        <p>A customizable QR code generator built with HTML, CSS and JavaScript. Generate live QR codes from any text or URL, customize colors and size, embed a logo in the centre, and export as PNG or SVG — free, no sign-up.</p>
+        <div class="proj-tech">
+          <span class="tech-tag">HTML</span>
+          <span class="tech-tag">CSS</span>
+          <span class="tech-tag">JavaScript</span>
+        </div>
+        <div class="proj-links">
+          <a href="https://github.com/abhinav082006/QR-Studio" target="_blank" class="proj-link"><i class="fa-brands fa-github"></i> View on GitHub <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:.68rem"></i></a>
+          <a href="https://qr-studio-eta.vercel.app/" target="_blank" class="proj-link demo"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:.68rem"></i> Live demo</a>
+        </div>
       </div>
-      <a href="https://github.com/abhinav082006/QR-Studio" target="_blank" class="proj-link">View on GitHub <i class="fa-solid fa-arrow-right" style="font-size:0.75rem"></i></a><br>
-      <br>
-      <a href="https://qr-studio-eta.vercel.app/" target="_blank" class="proj-link">Live demo <i class="fa-solid fa-arrow-right" style="font-size:0.75rem"></i></a>
     </div>
-    
-    <div class="project-card reveal">
+
+    <div class="project-row reveal">
       <div class="proj-icon"><i class="fa-solid fa-robot"></i></div>
-      <h3>CapDetector</h3>
-      <div class="proj-date"><i class="fa-regular fa-calendar"></i> May 2026</div>
-      <p>An AI-powered WhatsApp bot built to detect misinformation and fact-check forwarded messages in real-time. Integrates AI APIs for response generation and information verification, with full backend logic and automation.</p>
-      <div class="proj-tech">
-        <span class="tech-tag">Python</span>
-        <span class="tech-tag">AI APIs</span>
-        <span class="tech-tag">WhatsApp Integration</span>
-        <span class="tech-tag">Automation</span>
-        <span class="tech-tag">Backend</span>
+      <div>
+        <div class="proj-head">
+          <h3>CapDetector</h3>
+          <span class="proj-date">May 2026</span>
+        </div>
+        <p>An AI-powered WhatsApp bot built to detect misinformation and fact-check forwarded messages in real time. Integrates AI APIs for response generation and information verification, with full backend logic and automation.</p>
+        <div class="proj-tech">
+          <span class="tech-tag">Python</span>
+          <span class="tech-tag">AI APIs</span>
+          <span class="tech-tag">WhatsApp Integration</span>
+          <span class="tech-tag">Automation</span>
+          <span class="tech-tag">Backend</span>
+        </div>
+        <div class="proj-links">
+          <a href="https://github.com/abhinav082006/cap-detector" target="_blank" class="proj-link"><i class="fa-brands fa-github"></i> View on GitHub <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:.68rem"></i></a>
+        </div>
       </div>
-      <a href="https://github.com/abhinav082006/cap-detector" target="_blank" class="proj-link">View on GitHub <i class="fa-solid fa-arrow-right" style="font-size:0.75rem"></i></a>
     </div>
-    
-    <div class="project-card reveal">
+
+    <div class="project-row reveal">
       <div class="proj-icon"><i class="fa-solid fa-seedling"></i></div>
-      <h3>FunPetals</h3>
-      <div class="proj-date"><i class="fa-regular fa-calendar"></i> March 2026</div>
-      <p>A flower-themed productivity web app that combines multiple tools into one beautiful interface — to-do list, focus timer, music player, doodle pad, photo capture, and assistant integration — all with a responsive, engaging UI.</p>
-      <div class="proj-tech">
-        <span class="tech-tag">HTML</span>
-        <span class="tech-tag">CSS</span>
-        <span class="tech-tag">JavaScript</span>
-        <span class="tech-tag">Responsive UI</span>
-        <span class="tech-tag">UI/UX</span>
+      <div>
+        <div class="proj-head">
+          <h3>FunPetals</h3>
+          <span class="proj-date">March 2026</span>
+        </div>
+        <p>A flower-themed productivity web app that combines multiple tools into one interface — to-do list, focus timer, music player, doodle pad, photo capture, and assistant integration — all with a responsive, engaging UI.</p>
+        <div class="proj-tech">
+          <span class="tech-tag">HTML</span>
+          <span class="tech-tag">CSS</span>
+          <span class="tech-tag">JavaScript</span>
+          <span class="tech-tag">Responsive UI</span>
+          <span class="tech-tag">UI/UX</span>
+        </div>
+        <div class="proj-links">
+          <a href="https://github.com/abhinav082006" target="_blank" class="proj-link"><i class="fa-brands fa-github"></i> View on GitHub <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:.68rem"></i></a>
+          <a href="https://fun-petals.vercel.app/" target="_blank" class="proj-link demo"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:.68rem"></i> Live demo</a>
+        </div>
       </div>
-      <a href="https://github.com/abhinav082006" target="_blank" class="proj-link">View on GitHub <i class="fa-solid fa-arrow-right" style="font-size:0.75rem"></i></a>
-      <br>
-      <a href="https://fun-petals.vercel.app/" target="_blank" class="proj-link">Live demo <i class="fa-solid fa-arrow-right" style="font-size:0.75rem"></i></a>
     </div>
+
   </div>
 </div>
 
 <!-- EXPERIENCE / EDUCATION -->
 <div class="wrapper" id="experience">
-  <div class="section-label reveal">My Journey</div>
-  <h2 class="section-title reveal">Education & <span>Experience</span></h2>
+  <div class="section-head">
+    <div>
+      <div class="oval-badge section-label reveal">My Journey</div>
+      <h2 class="section-title reveal">Education &amp; <em>Experience</em></h2>
+    </div>
+  </div>
   <div class="timeline">
     <div class="tl-item reveal">
       <div class="tl-dot"></div>
       <div class="tl-date">2024 — Present</div>
-      <div class="tl-title">B.Tech — Computer Science & Engineering</div>
+      <div class="tl-title">B.Tech — Computer Science &amp; Engineering</div>
       <div class="tl-org">IIIT Kottayam, Kerala</div>
       <div class="tl-desc">Pursuing a four-year undergraduate program covering core CS fundamentals — algorithms, data structures, databases, software engineering, and emerging technologies like AI/ML.</div>
     </div>
-    
-        <div class="tl-item reveal">
+
+    <div class="tl-item reveal">
       <div class="tl-dot"></div>
       <div class="tl-date">May 2026</div>
       <div class="tl-title">Web Development Intern</div>
-      <div class="tl-org"> @ InAmigos Foundation</div>
-      <div class="tl-desc">Assisting in building responsive web pages to effectively present the NGO’s activities and impact.</div>
+      <div class="tl-org">InAmigos Foundation</div>
+      <div class="tl-desc">Assisting in building responsive web pages to effectively present the NGO's activities and impact.</div>
     </div>
   </div>
 </div>
 
 <!-- CONTACT -->
 <div class="wrapper" id="contact">
-  <div class="section-label reveal">Get In Touch</div>
-  <h2 class="section-title reveal">Let's <span>Connect</span></h2>
+  <div class="section-head">
+    <div>
+      <div class="oval-badge section-label reveal">Get In Touch</div>
+      <h2 class="section-title reveal">Let's <em>Connect</em></h2>
+    </div>
+  </div>
   <div class="contact-grid">
     <div>
       <div class="contact-intro reveal">
-        <h3>Open to opportunities & collaborations</h3>
-        <p>Whether you have a project idea, an internship opening, or just want to say hi — I'd love to hear from you. My inbox is always open!</p>
+        <h3>Open to opportunities &amp; collaborations</h3>
+        <p>Whether you have a project idea, an internship opening, or just want to say hi — I'd love to hear from you. My inbox is always open.</p>
       </div>
       <div class="contact-links reveal">
         <a href="mailto:abhinavgadipelli0806@gmail.com" class="c-link">
@@ -390,40 +297,23 @@ footer .sub{margin-top:0.3rem;font-size:0.74rem;opacity:0.7}
       </div>
     </div>
     <div class="contact-card reveal">
-      <div class="contact-card-icon">🚀</div>
-      <h4>Let's Build Something Together</h4>
+      <h4>Let's build something together</h4>
       <p>I'm a B.Tech CS student at IIIT Kottayam, actively building real-world projects. Looking for internships, open-source collaborations, and learning opportunities.</p>
-      <a href="https://mail.google.com/mail/?view=cm&to=abhinavgadipelli0806@gmail.com" class="btn btn-primary">Send a Message</a>
+      <a href="https://mail.google.com/mail/?view=cm&to=abhinavgadipelli0806@gmail.com" target="_blank" class="btn btn-primary">Send a Message</a>
     </div>
   </div>
 </div>
 
 <!-- FOOTER -->
 <footer>
-  <p>Designed & built by <span class="name">Gadipalli Abhinav</span> · 2026</p>
-  <p class="sub">B.Tech Computer Science · IIIT Kottayam</p>
+  <p>Designed &amp; built by <span class="name">Gadipalli Abhinav</span> · 2026</p>
+  <div class="foot-links">
+    <a href="resume.pdf" target="_blank">Resume</a>
+    <a href="https://github.com/abhinav082006" target="_blank">GitHub</a>
+    <a href="https://linkedin.com/in/abhinav-gadipalli/" target="_blank">LinkedIn</a>
+  </div>
 </footer>
 
-<script>
-// Scroll reveal
-const obs = new IntersectionObserver((entries) => {
-  entries.forEach((e, i) => {
-    if (e.isIntersecting) {
-      setTimeout(() => e.target.classList.add('visible'), i * 90);
-      obs.unobserve(e.target);
-    }
-  });
-}, { threshold: 0.08 });
-document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
-
-// Nav active highlight
-const sections = document.querySelectorAll('[id]');
-const links = document.querySelectorAll('.nav-links a');
-window.addEventListener('scroll', () => {
-  let cur = '';
-  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 220) cur = s.id; });
-  links.forEach(l => { l.style.color = l.getAttribute('href') === '#' + cur ? 'var(--accent)' : ''; });
-});
-</script>
+<script src="script.js"></script>
 </body>
 </html>
