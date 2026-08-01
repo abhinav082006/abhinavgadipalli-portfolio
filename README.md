@@ -1,108 +1,67 @@
-# 🚀 Gadipalli Abhinav — Personal Portfolio
+# Gadipalli Abhinav — Portfolio
 
-A sleek, dark-themed personal portfolio website built with pure HTML, CSS, and JavaScript. Designed to showcase my skills, projects, and experience as a Computer Science student at IIIT Kottayam.
+Personal portfolio site for **Gadipalli Abhinav**, Computer Science student at IIIT Kottayam. Built as a clean, editorial-style single-page site — separated into HTML, CSS, and JS instead of one combined file.
 
-🌐 **Live Site:** [abhinavgadipalli.vercel.app](https://abhinavgadipalli.vercel.app)
+**Live site:** [abhinavgadipalli.vercel.app](https://abhinavgadipalli.vercel.app/)
 
 ---
 
 ## ✨ Features
 
-- **Dark & Modern UI** — Deep dark theme with teal & purple accent gradients
-- **Fully Responsive** — Works seamlessly on mobile, tablet, and desktop
-- **Smooth Animations** — Scroll-reveal animations on every section
-- **Single File** — Entire site in one `index.html` — no frameworks, no dependencies
-- **Fast Load** — No build tools, no bundlers, instant load
-- **Interactive Nav** — Fixed navbar with active section highlighting
+- **Editorial, warm color palette** — espresso, mahogany, clay, stone, and sand tones instead of a generic dark/neon theme
+- **Custom typography** — [Fraunces](https://fonts.google.com/specimen/Fraunces) (display serif, used in headings and accents) paired with [Inter](https://fonts.google.com/specimen/Inter) (body/UI text)
+- **Tilted "postcard" hero photo frame** with floating location/degree badges
+- **Signature oval badge** used consistently across nav, hero, and section labels
+- **Row-based skills layout** grouped by category instead of a plain tag grid
+- **Editorial project list** — full-width rows with hover accent bars, icon markers, and pill-style GitHub/Live Demo buttons
+- **Vertical timeline** for education & experience
+- **Dark "certificate" style education card** instead of a plain white box
+- **Resume buttons** — view (opens in new tab) and download, in the nav, hero, and footer
+- **Scroll-reveal animations** on section entry, smooth hover transitions throughout
+- **Fully responsive** — adapted layouts for tablet and mobile
+- **Respects `prefers-reduced-motion`** for accessibility
 
 ---
 
-## 📄 Sections
+## 🗂️ Project Structure
 
-| Section | Description |
-|---|---|
-| **Hero** | Name, title, CTA buttons |
-| **About Me** | Photo, bio, education card |
-| **Skills** | Languages, web tech, tools & interests |
-| **Projects** | CapDetector, FunPetals with tech tags |
-| **Experience** | Timeline of education & internship |
-| **Contact** | Email, LinkedIn, GitHub, phone links |
+```
+├── index.html      # Page structure/content
+├── style.css        # All styling — colors, typography, layout, animations
+├── script.js         # Scroll-reveal + nav active-link highlighting
+├── myphoto.png       # Profile photo (add your own — see below)
+├── resume.pdf         # Resume file (add your own — see below)
+└── README.md
+```
+
+Previously the site had HTML and CSS combined in a single file — this version keeps them fully separated for easier maintenance.
+
+---
+
+## 🔧 Setup
+
+This is a static site — no build step or dependencies required.
+
+1. Clone the repo
+2. Add your own **`myphoto.png`** and **`resume.pdf`** to the project root (exact filenames, case-sensitive — this matters on Linux-based hosts like Vercel)
+3. Open `index.html` directly, or use a local dev server (e.g. VS Code's **Live Server** extension) to preview
+4. Deploy anywhere that serves static files (Vercel, Netlify, GitHub Pages, etc.)
+
+> If `myphoto.png` is missing, the hero frame gracefully falls back to a gradient placeholder icon instead of breaking the layout.
 
 ---
 
 ## 🛠️ Built With
 
-- **HTML5** — Structure
-- **CSS3** — Styling, animations, grid/flexbox layout
-- **JavaScript (Vanilla)** — Scroll reveal, nav highlight
-- **Google Fonts** — Syne + Outfit
-- **Font Awesome 6** — Icons
-
-> No React. No Tailwind. No frameworks. Just clean, handcrafted code.
-
----
-
-## 📁 Project Structure
-
-```
-portfolio/
-│
-├── index.html        # Entire site (single file)
-├── your-photo.jpg    # Your profile photo (add this)
-└── README.md         # This file
-```
-
----
-
-## 🖼️ Adding Your Photo
-
-1. Add your photo file to the same folder as `index.html`
-2. Open `index.html` and find:
-   ```html
-   <img src="myphoto.png" alt="Gadipalli Abhinav">
-   ```
-3. Replace `your-photo.jpg` with your actual filename
-4. Recommended photo size: **800 × 900px** (portrait)
-
----
-
-## 🚀 Deploy on Vercel
-
-1. Push your project to a **GitHub repository**
-2. Go to [vercel.com](https://vercel.com) and sign in with GitHub
-3. Click **"Add New Project"** → Import your repo
-4. Vercel auto-detects it as a static site — click **Deploy**
-5. Your site is live at `your-project-name.vercel.app` 🎉
-6. Rename it to `abhinavgadipalli.vercel.app` in Vercel settings
-
----
-
-## ✏️ Customization
-
-| What to change | Where to find it |
-|---|---|
-| Name & title | `#hero` section in HTML |
-| About Me text | `#about` section |
-| Skills | `.skill-tags` inside `#skills` |
-| Projects | `.project-card` inside `#projects` |
-| Experience | `.tl-item` inside `#experience` |
-| Contact links | `.c-link` inside `#contact` |
-| Accent color | `--accent` in `:root` CSS variables |
+- HTML5 & CSS3 (custom properties / CSS variables for theming)
+- Vanilla JavaScript (`IntersectionObserver` for scroll reveals)
+- [Font Awesome](https://fontawesome.com/) for icons
+- [Google Fonts](https://fonts.google.com/) — Fraunces & Inter
 
 ---
 
 ## 📬 Contact
 
-- 📧 [abhinavgadipelli0806@gmail.com](mailto:abhinavgadipelli0806@gmail.com)
-- 💼 [linkedin.com/in/abhinav-gadipalli](https://linkedin.com/in/abhinav-gadipalli/)
-- 🐙 [github.com/abhinav082006](https://github.com/abhinav082006)
-
----
-
-## 📝 License
-
-This project is open source and available under the [MIT License](LICENSE).
-
----
-
-<p align="center">Designed & built by <strong>Gadipalli Abhinav</strong> · 2026</p>
+- **Email:** abhinavgadipelli0806@gmail.com
+- **GitHub:** [github.com/abhinav082006](https://github.com/abhinav082006)
+- **LinkedIn:** [linkedin.com/in/abhinav-gadipalli](https://linkedin.com/in/abhinav-gadipalli/)
