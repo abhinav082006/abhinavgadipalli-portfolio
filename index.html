@@ -16,7 +16,7 @@
 <body>
 
 <!-- NAV -->
-<nav id="nav">
+<nav id="nav" class="nav-dark">
   <a href="#hero" class="nav-logo">AG.</a>
   <ul class="nav-links">
     <li><a href="#about">About</a></li>
@@ -28,281 +28,423 @@
   <a href="resume.pdf" target="_blank" class="oval-badge nav-resume">Resume <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:.68rem"></i></a>
 </nav>
 
-<!-- HERO -->
-<div id="hero">
-  <div class="hero-content">
-    <div class="hero-badge oval-badge"><span class="dot"></span> Open to Internships &amp; Collaborations</div>
-    <h1 class="hero-name">Gadipalli<br><em>Abhinav</em></h1>
-    <p class="hero-sub">Computer Science Student · IIIT Kottayam</p>
-    <p class="hero-desc">I build web apps, browser extensions and small AI-powered tools — currently exploring software development, web technologies and practical uses for AI.</p>
-    <div class="hero-btns">
-      <a href="#projects" class="btn btn-primary">View Projects</a>
-      <a href="resume.pdf" download class="btn btn-secondary">Download Resume <i class="fa-solid fa-arrow-down"></i></a>
-    </div>
-    <div class="hero-scroll">
-      <span class="scroll-line"></span>
-      <span>Scroll to explore</span>
-    </div>
-  </div>
+<!-- SLIDES WRAPPER — pinned panels with overscroll -->
+<div class="slides-wrapper">
 
-  <div class="hero-portrait-wrap reveal">
-    <div class="hero-frame-stack">
-      <div class="hero-frame">
-        <div class="hero-frame-placeholder"><i class="fa-solid fa-user"></i></div>
-        <img src="myphoto.png" alt="Gadipalli Abhinav" onerror="this.style.display='none'">
+<!-- HERO -->
+<section class="section section-1" id="hero">
+  <div class="section-content">
+    <div class="section-inner">
+      <!-- Glitter Wrap — same starfield used in Experience/Projects/Contact,
+           layered behind the Liquid Vortex tornado so stars show through
+           the swirl's gaps rather than the vortex sitting on flat black. -->
+      <div class="particles-bg glitter-wrap-bg" id="hero-particles" aria-hidden="true"></div>
+      <canvas id="vortex-canvas" class="hero-tornado-bg"></canvas>
+      <div class="hero-grid">
+        <div class="hero-content">
+          <div class="hero-badge oval-badge"><span class="dot"></span> Open to Internships &amp; Collaborations</div>
+          <h1 class="hero-name">Gadipalli<br><em>Abhinav</em></h1>
+          <p class="hero-sub">Computer Science Student · IIIT Kottayam</p>
+          <p class="hero-desc split">I build web apps, browser extensions and small AI-powered tools — currently exploring software development, web technologies and practical uses for AI.</p>
+          <div class="hero-btns">
+            <a href="#projects" class="btn btn-primary">View Projects</a>
+            <a href="resume.pdf" download class="btn btn-secondary">Download Resume <i class="fa-solid fa-arrow-down"></i></a>
+          </div>
+          <div class="hero-scroll">
+            <span class="scroll-line"></span>
+            <span>Scroll to explore</span>
+          </div>
+        </div>
+
+        <div class="hero-portrait-wrap reveal">
+          <div class="hero-frame-stack">
+            <div class="hero-frame">
+              <div class="hero-frame-placeholder" id="hero-photo-fallback"><i class="fa-solid fa-user"></i></div>
+              <img id="hero-photo" src="myphoto.png" alt="Gadipalli Abhinav" onerror="this.style.display='none'; document.getElementById('hero-photo-fallback').style.opacity='1';">
+              <canvas class="ascii-canvas" id="ascii-canvas"></canvas>
+            </div>
+          </div>
+        </div>
       </div>
-      <span class="oval-badge hero-loc">Kottayam, KL</span>
-      <span class="oval-badge hero-tag">B.Tech CSE</span>
     </div>
   </div>
-</div>
+</section>
 
 <!-- ABOUT -->
-<div class="wrapper" id="about">
-  <div class="section-head">
-    <div>
-      <div class="oval-badge section-label reveal">Who I Am</div>
-      <h2 class="section-title reveal">About <em>Me</em></h2>
-    </div>
-  </div>
-  <div class="about-grid">
-    <div class="about-text reveal">
-      <p class="lede">Hey, I'm Abhinav — a Computer Science student at IIIT Kottayam with a genuine passion for building things that matter.</p>
-      <p>Currently exploring software development, web technologies and AI tooling, and always on the lookout for exciting projects and collaborations.</p>
-      <div class="edu-card">
-        <h4>🎓 B.Tech — Computer Science &amp; Engineering</h4>
-        <p class="inst">Indian Institute of Information Technology Kottayam (IIIT Kottayam)</p>
-        <p class="year">2024 — 2028 · Kottayam, Kerala</p>
+<section class="section section-2" id="about">
+  <div class="section-content">
+    <div class="section-inner tall">
+      <!-- Glitter Wrap — same starfield used elsewhere, sits as the base
+           layer here so it reads behind the ambient glow / black hole
+           rather than competing with them. -->
+      <div class="particles-bg glitter-wrap-bg" id="about-particles" aria-hidden="true"></div>
+      <div class="about-ambient" aria-hidden="true"></div>
+      <div class="about-beam" aria-hidden="true"></div>
+      <div class="about-blackhole" id="about-blackhole" aria-hidden="true"></div>
+      <div class="about-scrim" aria-hidden="true"></div>
+      <div class="wrapper">
+        <div class="section-head">
+          <div>
+            <div class="oval-badge section-label reveal">Who I Am</div>
+            <h2 class="section-title reveal">About <em>Me</em></h2>
+          </div>
+        </div>
+        <div class="about-text reveal">
+          <p class="lede split">Hey, I'm Abhinav — a Computer Science student at IIIT Kottayam with a genuine passion for building things that matter.</p>
+          <p class="split">Currently exploring software development, web technologies and AI tooling, and always on the lookout for exciting projects and collaborations.</p>
+          <div class="edu-card">
+            <h4>🎓 B.Tech — Computer Science &amp; Engineering</h4>
+            <p class="inst">Indian Institute of Information Technology Kottayam (IIIT Kottayam)</p>
+            <p class="year">2024 — 2028 · Kottayam, Kerala</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-</div>
+</section>
 
 <!-- SKILLS -->
-<div class="wrapper" id="skills">
-  <div class="section-head">
-    <div>
-      <div class="oval-badge section-label reveal">What I Know</div>
-      <h2 class="section-title reveal">Technical <em>Skills</em></h2>
+<section class="section section-3" id="skills">
+  <div class="section-content">
+    <div class="section-inner">
+
+      <!-- Full-bleed tunnel stage -- fills the entire section edge to
+           edge (no card/border treatment; this IS the section, not a
+           graphic sitting inside it). -->
+      <div class="tunnel-stage" id="tunnel-stage">
+        <div class="tunnel-canvas-wrap" id="tunnel-canvas-ambient"></div>
+        <div class="tunnel-veil" aria-hidden="true"></div>
+
+        <!-- Intro title card: shown the moment you scroll in, then
+             fades away to reveal the tunnel already running behind it -->
+        <div class="tunnel-intro" id="tunnel-intro" aria-hidden="true">
+          <p class="tunnel-intro-label">What I Know</p>
+          <h2 class="tunnel-intro-title">Technical <em>Skills</em></h2>
+        </div>
+
+        <div class="tunnel-topright">
+          <p class="tunnel-hint">Hold to speed up</p>
+          <button type="button" class="mode-toggle-btn" id="tunnel-show-static">Switch to static view</button>
+        </div>
+
+        <div class="tunnel-chips">
+          <button type="button" class="tunnel-chip" data-category="languages">Languages</button>
+          <button type="button" class="tunnel-chip" data-category="web">Web Technologies</button>
+          <button type="button" class="tunnel-chip" data-category="interests">Interests</button>
+          <button type="button" class="tunnel-chip" data-category="tools">Tools &amp; Platforms</button>
+        </div>
+      </div>
+
+      <!-- Accessible fallback -- shown instead of the tunnel if WebGL is
+           unavailable or the visitor prefers reduced motion, or if the
+           visitor manually switches to it. Carries its own heading
+           since the tunnel view has no persistent one. -->
+      <div class="wrapper" id="skills-fallback" hidden>
+        <div class="section-head">
+          <div>
+            <div class="oval-badge section-label reveal">What I Know</div>
+            <h2 class="section-title reveal">Technical <em>Skills</em></h2>
+          </div>
+          <div class="static-head-right">
+            <p class="section-note reveal">Tools and languages I reach for most, grouped by how I use them.</p>
+            <button type="button" class="mode-toggle-btn" id="static-show-tunnel">Switch to interactive tunnel</button>
+          </div>
+        </div>
+        <div class="skills-list">
+          <div class="skill-row reveal">
+            <h3>Languages</h3>
+            <div class="skill-tags">
+              <span class="skill-tag">Python</span>
+              <span class="skill-tag">Java</span>
+              <span class="skill-tag">C</span>
+              <span class="skill-tag">SQL</span>
+            </div>
+          </div>
+          <div class="skill-row reveal">
+            <h3>Web Technologies</h3>
+            <div class="skill-tags">
+              <span class="skill-tag">HTML5</span>
+              <span class="skill-tag">CSS3</span>
+              <span class="skill-tag">JavaScript</span>
+            </div>
+          </div>
+          <div class="skill-row reveal">
+            <h3>Interests</h3>
+            <div class="skill-tags">
+              <span class="skill-tag">Software Dev</span>
+              <span class="skill-tag">Web Development</span>
+              <span class="skill-tag">AI Tools</span>
+            </div>
+          </div>
+          <div class="skill-row reveal">
+            <h3>Tools &amp; Platforms</h3>
+            <div class="skill-tags">
+              <span class="skill-tag">GitHub</span>
+              <span class="skill-tag">REST APIs</span>
+              <span class="skill-tag">Chrome Extension APIs</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
-    <p class="section-note reveal">Tools and languages I reach for most, grouped by how I use them.</p>
   </div>
-  <div class="skills-list">
-    <div class="skill-row reveal">
-      <h3>Languages</h3>
-      <div class="skill-tags">
-        <span class="skill-tag">Python</span>
-        <span class="skill-tag">Java</span>
-        <span class="skill-tag">C</span>
-        <span class="skill-tag">SQL</span>
-      </div>
-    </div>
-    <div class="skill-row reveal">
-      <h3>Web Technologies</h3>
-      <div class="skill-tags">
-        <span class="skill-tag">HTML5</span>
-        <span class="skill-tag">CSS3</span>
-        <span class="skill-tag">JavaScript</span>
-      </div>
-    </div>
-    <div class="skill-row reveal">
-      <h3>Interests</h3>
-      <div class="skill-tags">
-        <span class="skill-tag">Software Dev</span>
-        <span class="skill-tag">Web Development</span>
-        <span class="skill-tag">AI Tools</span>
-      </div>
-    </div>
-    <div class="skill-row reveal">
-      <h3>Tools &amp; Platforms</h3>
-      <div class="skill-tags">
-        <span class="skill-tag">GitHub</span>
-        <span class="skill-tag">REST APIs</span>
-        <span class="skill-tag">Chrome Extension APIs</span>
-      </div>
-    </div>
-  </div>
-</div>
+</section>
 
 <!-- PROJECTS -->
-<div class="wrapper" id="projects">
-  <div class="section-head">
-    <div>
-      <div class="oval-badge section-label reveal">What I've Built</div>
-      <h2 class="section-title reveal">Featured <em>Projects</em></h2>
+<section class="section section-4" id="projects">
+  <div class="section-content">
+    <!-- Glitter Wrap: same white starfield background as the Experience section.
+         Deliberately OUTSIDE .section-inner: that element is `.tall` (height:auto,
+         sized to its content), so any content-height change — e.g. a project card
+         growing during the magnetic hover effect — would resize this container
+         and reset/blank the canvas for a moment. .section-content is always a
+         fixed 100vh, so this stays put no matter what the cards are doing. -->
+    <div class="particles-bg glitter-wrap-bg" id="projects-particles" aria-hidden="true"></div>
+    <div class="section-inner tall">
+      <div class="wrapper">
+        <div class="section-head">
+          <div>
+            <div class="oval-badge section-label reveal">What I've Built</div>
+            <h2 class="section-title reveal">Featured <em>Projects</em></h2>
+          </div>
+          <p class="section-note reveal">A few things I've shipped recently -- extensions, tools and full front-ends.</p>
+        </div>
+
+        <!-- Magnetic carousel -- dock-style proximity magnification, click
+             a bar to expand it into a large project view. Built by JS from
+             the accessible list below, which real project data (icon,
+             title, tags, and the actual GitHub/demo links) lives in and is
+             cloned from -- not duplicated -- so the links can never drift
+             out of sync. -->
+        <div class="proj-carousel reveal" id="proj-carousel" hidden>
+          <div class="proj-bars" id="proj-bars"></div>
+        </div>
+
+        <div class="projects-list" id="projects-fallback">
+
+          <div class="project-row reveal" data-icon="fa-solid fa-box">
+            <div class="proj-icon"><i class="fa-solid fa-box"></i></div>
+            <div>
+              <div class="proj-head">
+                <h3>Trackezz</h3>
+                <span class="proj-date">July 2026</span>
+              </div>
+              <p class="split">Chrome extension for Indian students and job seekers that automatically imports and tracks job applications across major platforms. No manual entry -- just apply and it handles the rest.</p>
+              <div class="proj-tech">
+                <span class="tech-tag">HTML</span>
+                <span class="tech-tag">CSS</span>
+                <span class="tech-tag">JavaScript</span>
+                <span class="tech-tag">Gmail API</span>
+                <span class="tech-tag">Chrome Extension APIs</span>
+                <span class="tech-tag">OAuth 2.0</span>
+              </div>
+              <div class="proj-links">
+                <a href="https://github.com/abhinav082006/trackezz" target="_blank" class="proj-link"><i class="fa-brands fa-github"></i> View on GitHub <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:.68rem"></i></a>
+              </div>
+            </div>
+          </div>
+
+          <div class="project-row reveal" data-icon="fa-solid fa-qrcode">
+            <div class="proj-icon"><i class="fa-solid fa-qrcode"></i></div>
+            <div>
+              <div class="proj-head">
+                <h3>QR Studio</h3>
+                <span class="proj-date">June 2026</span>
+              </div>
+              <p class="split">A customizable QR code generator built with HTML, CSS and JavaScript. Generate live QR codes from any text or URL, customize colors and size, embed a logo in the centre, and export as PNG or SVG -- free, no sign-up.</p>
+              <div class="proj-tech">
+                <span class="tech-tag">HTML</span>
+                <span class="tech-tag">CSS</span>
+                <span class="tech-tag">JavaScript</span>
+              </div>
+              <div class="proj-links">
+                <a href="https://github.com/abhinav082006/QR-Studio" target="_blank" class="proj-link"><i class="fa-brands fa-github"></i> View on GitHub <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:.68rem"></i></a>
+                <a href="https://qr-studio-eta.vercel.app/" target="_blank" class="proj-link demo"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:.68rem"></i> Live demo</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="project-row reveal" data-icon="fa-solid fa-robot">
+            <div class="proj-icon"><i class="fa-solid fa-robot"></i></div>
+            <div>
+              <div class="proj-head">
+                <h3>CapDetector</h3>
+                <span class="proj-date">May 2026</span>
+              </div>
+              <p class="split">An AI-powered WhatsApp bot built to detect misinformation and fact-check forwarded messages in real time. Integrates AI APIs for response generation and information verification, with full backend logic and automation.</p>
+              <div class="proj-tech">
+                <span class="tech-tag">Python</span>
+                <span class="tech-tag">AI APIs</span>
+                <span class="tech-tag">WhatsApp Integration</span>
+                <span class="tech-tag">Automation</span>
+                <span class="tech-tag">Backend</span>
+              </div>
+              <div class="proj-links">
+                <a href="https://github.com/abhinav082006/cap-detector" target="_blank" class="proj-link"><i class="fa-brands fa-github"></i> View on GitHub <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:.68rem"></i></a>
+              </div>
+            </div>
+          </div>
+
+          <div class="project-row reveal" data-icon="fa-solid fa-seedling">
+            <div class="proj-icon"><i class="fa-solid fa-seedling"></i></div>
+            <div>
+              <div class="proj-head">
+                <h3>FunPetals</h3>
+                <span class="proj-date">March 2026</span>
+              </div>
+              <p class="split">A flower-themed productivity web app that combines multiple tools into one interface -- to-do list, focus timer, music player, doodle pad, photo capture, and assistant integration -- all with a responsive, engaging UI.</p>
+              <div class="proj-tech">
+                <span class="tech-tag">HTML</span>
+                <span class="tech-tag">CSS</span>
+                <span class="tech-tag">JavaScript</span>
+                <span class="tech-tag">Responsive UI</span>
+                <span class="tech-tag">UI/UX</span>
+              </div>
+              <div class="proj-links">
+                <a href="https://github.com/abhinav082006" target="_blank" class="proj-link"><i class="fa-brands fa-github"></i> View on GitHub <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:.68rem"></i></a>
+                <a href="https://fun-petals.vercel.app/" target="_blank" class="proj-link demo"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:.68rem"></i> Live demo</a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
     </div>
-    <p class="section-note reveal">A few things I've shipped recently — extensions, tools and full front-ends.</p>
   </div>
-
-  <div class="projects-list">
-
-    <div class="project-row reveal">
-      <div class="proj-icon"><i class="fa-solid fa-box"></i></div>
-      <div>
-        <div class="proj-head">
-          <h3>Trackezz</h3>
-          <span class="proj-date">July 2026</span>
-        </div>
-        <p>Chrome extension for Indian students and job seekers that automatically imports and tracks job applications across major platforms. No manual entry — just apply and it handles the rest.</p>
-        <div class="proj-tech">
-          <span class="tech-tag">HTML</span>
-          <span class="tech-tag">CSS</span>
-          <span class="tech-tag">JavaScript</span>
-          <span class="tech-tag">Gmail API</span>
-          <span class="tech-tag">Chrome Extension APIs</span>
-          <span class="tech-tag">OAuth 2.0</span>
-        </div>
-        <div class="proj-links">
-          <a href="https://github.com/abhinav082006/trackezz" target="_blank" class="proj-link"><i class="fa-brands fa-github"></i> View on GitHub <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:.68rem"></i></a>
-        </div>
-      </div>
-    </div>
-
-    <div class="project-row reveal">
-      <div class="proj-icon"><i class="fa-solid fa-qrcode"></i></div>
-      <div>
-        <div class="proj-head">
-          <h3>QR Studio</h3>
-          <span class="proj-date">June 2026</span>
-        </div>
-        <p>A customizable QR code generator built with HTML, CSS and JavaScript. Generate live QR codes from any text or URL, customize colors and size, embed a logo in the centre, and export as PNG or SVG — free, no sign-up.</p>
-        <div class="proj-tech">
-          <span class="tech-tag">HTML</span>
-          <span class="tech-tag">CSS</span>
-          <span class="tech-tag">JavaScript</span>
-        </div>
-        <div class="proj-links">
-          <a href="https://github.com/abhinav082006/QR-Studio" target="_blank" class="proj-link"><i class="fa-brands fa-github"></i> View on GitHub <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:.68rem"></i></a>
-          <a href="https://qr-studio-eta.vercel.app/" target="_blank" class="proj-link demo"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:.68rem"></i> Live demo</a>
-        </div>
-      </div>
-    </div>
-
-    <div class="project-row reveal">
-      <div class="proj-icon"><i class="fa-solid fa-robot"></i></div>
-      <div>
-        <div class="proj-head">
-          <h3>CapDetector</h3>
-          <span class="proj-date">May 2026</span>
-        </div>
-        <p>An AI-powered WhatsApp bot built to detect misinformation and fact-check forwarded messages in real time. Integrates AI APIs for response generation and information verification, with full backend logic and automation.</p>
-        <div class="proj-tech">
-          <span class="tech-tag">Python</span>
-          <span class="tech-tag">AI APIs</span>
-          <span class="tech-tag">WhatsApp Integration</span>
-          <span class="tech-tag">Automation</span>
-          <span class="tech-tag">Backend</span>
-        </div>
-        <div class="proj-links">
-          <a href="https://github.com/abhinav082006/cap-detector" target="_blank" class="proj-link"><i class="fa-brands fa-github"></i> View on GitHub <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:.68rem"></i></a>
-        </div>
-      </div>
-    </div>
-
-    <div class="project-row reveal">
-      <div class="proj-icon"><i class="fa-solid fa-seedling"></i></div>
-      <div>
-        <div class="proj-head">
-          <h3>FunPetals</h3>
-          <span class="proj-date">March 2026</span>
-        </div>
-        <p>A flower-themed productivity web app that combines multiple tools into one interface — to-do list, focus timer, music player, doodle pad, photo capture, and assistant integration — all with a responsive, engaging UI.</p>
-        <div class="proj-tech">
-          <span class="tech-tag">HTML</span>
-          <span class="tech-tag">CSS</span>
-          <span class="tech-tag">JavaScript</span>
-          <span class="tech-tag">Responsive UI</span>
-          <span class="tech-tag">UI/UX</span>
-        </div>
-        <div class="proj-links">
-          <a href="https://github.com/abhinav082006" target="_blank" class="proj-link"><i class="fa-brands fa-github"></i> View on GitHub <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:.68rem"></i></a>
-          <a href="https://fun-petals.vercel.app/" target="_blank" class="proj-link demo"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:.68rem"></i> Live demo</a>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</div>
+</section>
 
 <!-- EXPERIENCE / EDUCATION -->
-<div class="wrapper" id="experience">
-  <div class="section-head">
-    <div>
-      <div class="oval-badge section-label reveal">My Journey</div>
-      <h2 class="section-title reveal">Education &amp; <em>Experience</em></h2>
-    </div>
-  </div>
-  <div class="timeline">
-    <div class="tl-item reveal">
-      <div class="tl-dot"></div>
-      <div class="tl-date">2024 — Present</div>
-      <div class="tl-title">B.Tech — Computer Science &amp; Engineering</div>
-      <div class="tl-org">IIIT Kottayam, Kerala</div>
-      <div class="tl-desc">Pursuing a four-year undergraduate program covering core CS fundamentals — algorithms, data structures, databases, software engineering, and emerging technologies like AI/ML.</div>
-    </div>
+<section class="section section-5" id="experience">
+  <div class="section-content">
+    <!-- Glitter Wrap: white starfield warping outward from center. Kept outside
+         .section-inner (which is `.tall` / height:auto) for the same reason as
+         the Projects section — the dial's own content can change height, and
+         we don't want that resetting this canvas. -->
+    <div class="particles-bg glitter-wrap-bg" id="experience-particles" aria-hidden="true"></div>
+    <div class="section-inner tall">
+      <div class="wrapper">
+        <div class="section-head">
+          <div>
+            <div class="oval-badge section-label reveal">My Journey</div>
+            <h2 class="section-title reveal">Education &amp; <em>Experience</em></h2>
+          </div>
+        </div>
 
-    <div class="tl-item reveal">
-      <div class="tl-dot"></div>
-      <div class="tl-date">May 2026</div>
-      <div class="tl-title">Web Development Intern</div>
-      <div class="tl-org">InAmigos Foundation</div>
-      <div class="tl-desc">Assisting in building responsive web pages to effectively present the NGO's activities and impact.</div>
-    </div>
-  </div>
-</div>
+        <!-- Rotating dial -- built by JS from the accessible timeline
+             below (single source of truth for dates/titles/descriptions).
+             data-label is the short month/year shown on the dial itself;
+             the full date range still lives in .tl-date for the fallback
+             and is reused as the panel's date line. -->
+        <div class="exp-dial reveal" id="exp-dial" hidden>
+          <div class="exp-arc" id="exp-arc"></div>
+          <div class="exp-panel" id="exp-panel"></div>
+        </div>
 
-<!-- CONTACT -->
-<div class="wrapper" id="contact">
-  <div class="section-head">
-    <div>
-      <div class="oval-badge section-label reveal">Get In Touch</div>
-      <h2 class="section-title reveal">Let's <em>Connect</em></h2>
-    </div>
-  </div>
-  <div class="contact-grid">
-    <div>
-      <div class="contact-intro reveal">
-        <h3>Open to opportunities &amp; collaborations</h3>
-        <p>Whether you have a project idea, an internship opening, or just want to say hi — I'd love to hear from you. My inbox is always open.</p>
-      </div>
-      <div class="contact-links reveal">
-        <a href="mailto:abhinavgadipelli0806@gmail.com" class="c-link">
-          <div class="c-icon"><i class="fa-solid fa-envelope"></i></div>
-          <div class="c-info">
-            <p>Email</p>
-            <p>abhinavgadipelli0806@gmail.com</p>
+        <div class="timeline" id="timeline-fallback">
+          <div class="tl-item reveal" data-label="2024">
+            <div class="tl-dot"></div>
+            <div class="tl-date">2024 — Present</div>
+            <div class="tl-title">B.Tech — Computer Science &amp; Engineering</div>
+            <div class="tl-org">IIIT Kottayam, Kerala</div>
+            <div class="tl-desc">Pursuing a four-year undergraduate program covering core CS fundamentals — algorithms, data structures, databases, software engineering, and emerging technologies like AI/ML.</div>
           </div>
-        </a>
-        <a href="https://linkedin.com/in/abhinav-gadipalli/" target="_blank" class="c-link">
-          <div class="c-icon"><i class="fa-brands fa-linkedin-in"></i></div>
-          <div class="c-info">
-            <p>LinkedIn</p>
-            <p>linkedin.com/in/abhinav-gadipalli</p>
+
+          <div class="tl-item reveal" data-label="May 2026">
+            <div class="tl-dot"></div>
+            <div class="tl-date">May 2026</div>
+            <div class="tl-title">Web Development Intern</div>
+            <div class="tl-org">InAmigos Foundation</div>
+            <div class="tl-desc">Assisting in building responsive web pages to effectively present the NGO's activities and impact.</div>
           </div>
-        </a>
-        <a href="https://github.com/abhinav082006" target="_blank" class="c-link">
-          <div class="c-icon"><i class="fa-brands fa-github"></i></div>
-          <div class="c-info">
-            <p>GitHub</p>
-            <p>github.com/abhinav082006</p>
-          </div>
-        </a>
-        <a href="tel:+919398349608" class="c-link">
-          <div class="c-icon"><i class="fa-solid fa-phone"></i></div>
-          <div class="c-info">
-            <p>Phone</p>
-            <p>+91 93983 49608</p>
-          </div>
-        </a>
+        </div>
       </div>
     </div>
-    <div class="contact-card reveal">
-      <h4>Let's build something together</h4>
-      <p>I'm a B.Tech CS student at IIIT Kottayam, actively building real-world projects. Looking for internships, open-source collaborations, and learning opportunities.</p>
-      <a href="https://mail.google.com/mail/?view=cm&to=abhinavgadipelli0806@gmail.com" target="_blank" class="btn btn-primary">Send a Message</a>
+  </div>
+</section>
+
+<!-- CONTACT (final resting panel — not pinned/animated out) -->
+<section class="section section-6" id="contact">
+  <div class="section-content">
+    <!-- Glitter Wrap: same scattered/twinkling starfield background as
+         Experience and Projects, layered behind everything in this section too. -->
+    <div class="particles-bg glitter-wrap-bg" id="contact-stars" aria-hidden="true"></div>
+    <!-- Liquid Vortex — full-bleed across the whole section rather than a
+         boxed container, so its own shader-side gaussian falloff creates
+         the fade instead of a hard container edge (a boxed wrapper was
+         visibly clipping it before). data-offset-x/-y shift the swirl's
+         centre toward the right side of the section (see liquid-vortex.js)
+         since the shader itself now spans the full section width. -->
+    <canvas
+      class="liquid-vortex-bg contact-vortex-canvas"
+      aria-hidden="true"
+      data-smoke="#FFF700"
+      data-deep="#FFF700"
+      data-ember="#FFF700"
+      data-swirl="10"
+      data-turbulence="20"
+      data-detail="20"
+      data-density="4"
+      data-contrast="20"
+      data-ember-amount="0"
+      data-hover-boost="20"
+      data-size-percent="100"
+      data-speed="1"
+      data-offset-x="0.27"
+      data-offset-y="-0.02"
+    ></canvas>
+    <div class="section-inner tall">
+      <div class="wrapper">
+        <div class="section-head">
+          <div>
+            <div class="oval-badge section-label reveal">Get In Touch</div>
+            <h2 class="section-title reveal">Let's <em>Connect</em></h2>
+          </div>
+        </div>
+        <div class="contact-grid">
+          <div class="contact-intro reveal">
+            <h3>Open to opportunities &amp; collaborations</h3>
+            <p class="split">Whether you have a project idea, an internship opening, or just want to say hi — I'd love to hear from you. My inbox is always open.</p>
+          </div>
+          <div class="contact-links reveal">
+            <a href="mailto:abhinavgadipelli0806@gmail.com" class="c-link">
+              <div class="c-icon"><i class="fa-solid fa-envelope"></i></div>
+              <div class="c-info">
+                <p>Email</p>
+                <p>abhinavgadipelli0806@gmail.com</p>
+              </div>
+            </a>
+            <a href="https://linkedin.com/in/abhinav-gadipalli/" target="_blank" class="c-link">
+              <div class="c-icon"><i class="fa-brands fa-linkedin-in"></i></div>
+              <div class="c-info">
+                <p>LinkedIn</p>
+                <p>linkedin.com/in/abhinav-gadipalli</p>
+              </div>
+            </a>
+            <a href="https://github.com/abhinav082006" target="_blank" class="c-link">
+              <div class="c-icon"><i class="fa-brands fa-github"></i></div>
+              <div class="c-info">
+                <p>GitHub</p>
+                <p>github.com/abhinav082006</p>
+              </div>
+            </a>
+            <a href="tel:+919398349608" class="c-link">
+              <div class="c-icon"><i class="fa-solid fa-phone"></i></div>
+              <div class="c-info">
+                <p>Phone</p>
+                <p>+91 93983 49608</p>
+              </div>
+            </a>
+          </div>
+          <a href="https://mail.google.com/mail/?view=cm&to=abhinavgadipelli0806@gmail.com" target="_blank" class="btn btn-primary contact-cta reveal">Send a Message</a>
+        </div>
+      </div>
     </div>
   </div>
+</section>
+
 </div>
+<!-- /SLIDES WRAPPER -->
 
 <!-- FOOTER -->
 <footer>
@@ -314,6 +456,21 @@
   </div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<script src="vortex.js"></script>
+<script src="blackhole.js"></script>
+<script src="tunnel.js"></script>
+<script src="projects-carousel.js"></script>
+<script src="experience-dial.js"></script>
+<script src="GlitterWrap.js"></script>
+<script src="liquid-vortex.js"></script>
+<!-- interstellar.js (the live WebGL shader) intentionally not included —
+     see the comment in the Contact section for why. Kept in the project
+     if you want to switch back to it later. -->
+<!-- <script src="interstellar.js"></script> -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/SplitText.min.js"></script>
 <script src="script.js"></script>
 </body>
 </html>
