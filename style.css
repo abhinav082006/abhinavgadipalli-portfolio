@@ -1,451 +1,1362 @@
-// ---------- Scroll reveal ----------
-const obs = new IntersectionObserver((entries) => {
-  entries.forEach((entry, i) => {
-    if (entry.isIntersecting) {
-      setTimeout(() => entry.target.classList.add('visible'), i * 90);
-      obs.unobserve(entry.target);
-    }
-  });
-}, { threshold: 0.08 });
+/* =========================================================
+   Gadipalli Abhinav — Portfolio
+   Palette + type sourced from the client's moodboard:
+   espresso browns / taupe / sand, high-contrast editorial serif.
+   ========================================================= */
 
-document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-// ---------- Nav scrolled shadow ----------
-const nav = document.getElementById('nav');
-const links = document.querySelectorAll('.nav-links a');
+:root{
+  /* --- core palette (from moodboard) --- */
+  --ink:      #291C0E;   /* darkest — headlines, primary text   */
+  --espresso: #6E473B;   /* secondary text, strong borders       */
+  --clay:     #A78D78;   /* accent — links, icons, small marks   */
+  --stone:    #BEB5A9;   /* muted borders, dividers              */
+  --sand:     #E1D4C2;   /* base background                      */
 
-window.addEventListener('scroll', () => {
-  nav.classList.toggle('scrolled', window.scrollY > 20);
-});
+  /* --- derived surfaces (tints of the palette, not new hues) --- */
+  --paper:    #F7F1E8;   /* card / panel surface                 */
+  --paper-2:  #FBF7F1;   /* lightest surface, inputs              */
+  --ink-soft: rgba(41,28,14,0.62);
+  --ink-faint:rgba(41,28,14,0.38);
+  --line:     rgba(41,28,14,0.14);
 
-function setActiveNav(id) {
-  links.forEach(link => {
-    link.classList.toggle('active', link.getAttribute('href') === '#' + id);
-  });
-  // hero, about, skills, projects, experience + contact have dark backgrounds — swap the nav to match
-  nav.classList.toggle('nav-dark', id === 'hero' || id === 'about' || id === 'skills' || id === 'projects' || id === 'experience' || id === 'contact');
+  /* --- type --- */
+  --fh: 'Fraunces', serif;          /* display / headings */
+  --fb: 'Inter', sans-serif;        /* body / UI */
+
+  --container: 1120px;
+  --radius-lg: 26px;
+  --radius-md: 16px;
+  --radius-sm: 10px;
+  --nav-h: 78px;
 }
 
-// ---------- ASCII Reveal (ported from Originkit's React component) ----------
-// Renders the hero photo as ASCII art; hovering reveals the real photo
-// through a soft, trailing circular "torch" that follows the pointer.
-(function initAsciiReveal() {
-  const canvas = document.getElementById('ascii-canvas');
-  const img = document.getElementById('hero-photo');
-  if (!canvas || !img) return;
-
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return;
-
-  // ---- options (tuned for the ~200x250 frame) ----
-  const fit = 'cover';
-  const focusY = 50;
-  const columns = 58;          // denser — was 38, now the photo isn't visible underneath so the ASCII carries the whole image
-  const ramp = ' .:-=+*#%@';
-  const invert = false;
-  const contrast = 100;
-  const inkColor = '#E8C9A0';  // warm caramel, matching the tornado's palette (was dark ink on the old light card)
-  const revealSize = 28;       // scaled down from 34
-  const revealSoftness = 8;
-
-  const contrastAt = (value) => 0.5 + (value / 100) * 2;
-  const clampFocus = (value) => Math.min(100, Math.max(0, value));
-
-  function placeRect(imgW, imgH, boxW, boxH) {
-    const scale = fit === 'contain'
-      ? Math.min(boxW / imgW, boxH / imgH)
-      : Math.max(boxW / imgW, boxH / imgH);
-    const dw = imgW * scale;
-    const dh = imgH * scale;
-    const f = fit === 'cover' ? clampFocus(focusY) / 100 : 0.5;
-    return { dx: (boxW - dw) / 2, dy: (boxH - dh) * f, dw, dh };
-  }
-
-  const punch = contrastAt(contrast);
-  let off = null;
-  let sampler = null;
-  const revealLayer = document.createElement('canvas');
-  const maskLayer = document.createElement('canvas');
-  let coverRect = { dx: 0, dy: 0, dw: 0, dh: 0 };
-  let raf = 0;
-  let alive = true;
-
-  const BLOB_COUNT = 5;
-  let blobs = Array.from({ length: BLOB_COUNT }, () => ({ x: 0, y: 0 }));
-  let seeded = false;
-  const pointer = { x: -9999, y: -9999, inside: false };
-
-  function getSize() {
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const w = canvas.clientWidth || 200;
-    const h = canvas.clientHeight || 250;
-    return { w, h, dpr };
-  }
-
-  function buildAscii() {
-    if (!img.naturalWidth) return;
-    const { w, h, dpr } = getSize();
-    canvas.width = Math.max(1, Math.round(w * dpr));
-    canvas.height = Math.max(1, Math.round(h * dpr));
-
-    const cols = Math.max(8, Math.round(columns));
-    const cellW = (w * dpr) / cols;
-    const fontPx = cellW * 1.7;
-    const cellH = fontPx;
-    const rows = Math.max(1, Math.floor((h * dpr) / cellH));
-
-    if (!sampler) sampler = document.createElement('canvas');
-    sampler.width = cols;
-    sampler.height = rows;
-    const sctx = sampler.getContext('2d', { willReadFrequently: true });
-    if (!sctx) return;
-
-    const place = placeRect(img.naturalWidth, img.naturalHeight, canvas.width, canvas.height);
-    sctx.clearRect(0, 0, cols, rows);
-    sctx.drawImage(img, place.dx / cellW, place.dy / cellH, place.dw / cellW, place.dh / cellH);
-
-    let data;
-    try {
-      data = sctx.getImageData(0, 0, cols, rows).data;
-    } catch (e) {
-      return;
-    }
-
-    if (!off) off = document.createElement('canvas');
-    off.width = canvas.width;
-    off.height = canvas.height;
-    const octx = off.getContext('2d');
-    if (!octx) return;
-    octx.clearRect(0, 0, off.width, off.height);
-    octx.font = 'bold ' + fontPx.toFixed(2) + 'px ui-monospace, monospace';
-    octx.textBaseline = 'top';
-    octx.fillStyle = inkColor;
-
-    const last = ramp.length - 1;
-    const ALPHA_THRESHOLD = 64; // pixels more transparent than this always render as empty
-    for (let r = 0; r < rows; r++) {
-      for (let c = 0; c < cols; c++) {
-        const i = (r * cols + c) * 4;
-        const aa = data[i + 3];
-        if (aa < ALPHA_THRESHOLD) continue; // transparent — skip regardless of RGB
-        const rr = data[i], gg = data[i + 1], bb = data[i + 2];
-        let lum = (0.299 * rr + 0.587 * gg + 0.114 * bb) / 255;
-        lum = (lum - 0.5) * punch + 0.5;
-        if (invert) lum = 1 - lum;
-        lum = lum < 0 ? 0 : lum > 1 ? 1 : lum;
-        const ch = ramp[Math.round(lum * last)];
-        if (ch === ' ') continue;
-        octx.fillText(ch, c * cellW, r * cellH);
-      }
-    }
-
-    coverRect = place;
-  }
-
-  function ensureLayer(layer) {
-    if (layer.width !== canvas.width || layer.height !== canvas.height) {
-      layer.width = canvas.width;
-      layer.height = canvas.height;
-    }
-    return layer;
-  }
-
-  function updateBlobs() {
-    const { dpr } = getSize();
-    const tx = pointer.x * dpr;
-    const ty = pointer.y * dpr;
-    if (!seeded) {
-      blobs.forEach(b => { b.x = tx; b.y = ty; });
-      seeded = true;
-      return;
-    }
-    blobs[0].x += (tx - blobs[0].x) * 0.35;
-    blobs[0].y += (ty - blobs[0].y) * 0.35;
-    for (let i = 1; i < blobs.length; i++) {
-      blobs[i].x += (blobs[i - 1].x - blobs[i].x) * 0.35;
-      blobs[i].y += (blobs[i - 1].y - blobs[i].y) * 0.35;
-    }
-  }
-
-  function paint() {
-    if (!off) return;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(off, 0, 0);
-
-    if (!pointer.inside) return;
-
-    const { dpr } = getSize();
-    const photo = ensureLayer(revealLayer);
-    const pctx = photo.getContext('2d');
-    const mask = ensureLayer(maskLayer);
-    const mctx = mask.getContext('2d');
-    if (!pctx || !mctx) return;
-
-    pctx.globalCompositeOperation = 'source-over';
-    pctx.clearRect(0, 0, photo.width, photo.height);
-    pctx.drawImage(img, coverRect.dx, coverRect.dy, coverRect.dw, coverRect.dh);
-
-    mctx.clearRect(0, 0, mask.width, mask.height);
-    mctx.save();
-    mctx.filter = `blur(${(revealSoftness * dpr).toFixed(1)}px)`;
-    mctx.fillStyle = '#FFFFFF';
-    for (let i = 0; i < blobs.length; i++) {
-      const t = blobs.length <= 1 ? 0 : i / (blobs.length - 1);
-      const radius = revealSize * dpr * (1 - t * 0.5);
-      mctx.beginPath();
-      mctx.arc(blobs[i].x, blobs[i].y, radius, 0, Math.PI * 2);
-      mctx.fill();
-    }
-    mctx.restore();
-
-    pctx.globalCompositeOperation = 'destination-in';
-    pctx.drawImage(mask, 0, 0);
-    pctx.globalCompositeOperation = 'source-over';
-    ctx.drawImage(photo, 0, 0);
-  }
-
-  function loop() {
-    if (!alive) return;
-    updateBlobs();
-    paint();
-    raf = requestAnimationFrame(loop);
-  }
-
-  function onMove(e) {
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    pointer.x = x;
-    pointer.y = y;
-    pointer.inside = x >= 0 && y >= 0 && x <= rect.width && y <= rect.height;
-  }
-  function onLeave() {
-    pointer.inside = false;
-    seeded = false;
-  }
-
-  function start() {
-    buildAscii();
-    paint();
-    raf = requestAnimationFrame(loop);
-  }
-
-  if (img.complete && img.naturalWidth) {
-    start();
-  } else {
-    img.addEventListener('load', start, { once: true });
-  }
-
-  if (typeof ResizeObserver !== 'undefined') {
-    new ResizeObserver(() => { buildAscii(); paint(); }).observe(canvas);
-  }
-  canvas.addEventListener('pointermove', onMove);
-  canvas.addEventListener('pointerleave', onLeave);
-})();
-
-// ---------- 3D tilt on pointer move (buttons + hero photo) ----------
-if (typeof gsap !== 'undefined') {
-  const tiltTargets = document.querySelectorAll('.btn, .proj-link, .nav-resume, .hero-frame');
-
-  tiltTargets.forEach(el => {
-    const isPhoto = el.classList.contains('hero-frame');
-    const maxTilt = isPhoto ? 14 : 10;
-    const lift = isPhoto ? -6 : -3;
-    const baseZ = isPhoto ? 2.5 : 0; // preserves the photo's existing signature tilt at rest
-
-    gsap.set(el, { transformPerspective: 600, rotationZ: baseZ });
-
-    const rx = gsap.quickTo(el, 'rotationX', { duration: 0.5, ease: 'power3' });
-    const ry = gsap.quickTo(el, 'rotationY', { duration: 0.5, ease: 'power3' });
-    const ty = gsap.quickTo(el, 'y', { duration: 0.5, ease: 'power3' });
-    const rz = isPhoto ? gsap.quickTo(el, 'rotationZ', { duration: 0.5, ease: 'power3' }) : null;
-
-    el.addEventListener('pointermove', (e) => {
-      const rect = el.getBoundingClientRect();
-      const px = (e.clientX - rect.left) / rect.width;
-      const py = (e.clientY - rect.top) / rect.height;
-      rx(gsap.utils.interpolate(maxTilt, -maxTilt, py));
-      ry(gsap.utils.interpolate(-maxTilt, maxTilt, px));
-      ty(lift);
-      if (rz) rz(0); // straightens on hover, same as the old CSS :hover behavior
-    });
-
-    el.addEventListener('pointerleave', () => {
-      rx(0); ry(0); ty(0);
-      if (rz) rz(baseZ);
-    });
-  });
+html{
+  scroll-behavior: smooth;
+  background: #0B0705;
 }
 
-// ---------- Pinned panels with overscroll ----------
-// Wait for full page load AND web fonts, THEN wait two animation frames —
-// 'load'/fonts.ready firing doesn't guarantee the browser has actually run
-// a layout pass yet, which is why offsetHeight/clientHeight were measuring
-// as 0 even though the CSS itself was correct.
-Promise.all([
-  new Promise(resolve => {
-    if (document.readyState === 'complete') resolve();
-    else window.addEventListener('load', resolve);
-  }),
-  document.fonts ? document.fonts.ready : Promise.resolve()
-]).then(() => new Promise(resolve => {
-  requestAnimationFrame(() => requestAnimationFrame(resolve));
-})).then(() => {
-  if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
-  gsap.registerPlugin(ScrollTrigger);
+body{
+  background: #0B0705;
+  color: var(--paper-2);
+  font-family: var(--fb);
+  line-height: 1.7;
+  overflow-x: hidden;
+  position: relative;
+}
 
-  const allSections = gsap.utils.toArray('.section');
+/* subtle paper grain — restrained, not glowing orbs */
+body::before{
+  content:'';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(rgba(41,28,14,0.05) 1px, transparent 1px);
+  background-size: 22px 22px;
+  opacity: .5;
+}
 
-  // Nav active-link highlighting — driven by ScrollTrigger itself (accounts
-  // for pinning correctly), instead of the old offsetTop math which broke
-  // once panels started using custom pin/margin logic.
-  allSections.forEach(section => {
-    ScrollTrigger.create({
-      trigger: section,
-      start: 'top center',
-      end: 'bottom center',
-      onToggle: self => { if (self.isActive) setActiveNav(section.id); }
-    });
-  });
+::selection{ background: var(--espresso); color: var(--paper-2); }
 
-  const panels = allSections.slice();
-  panels.pop(); // last panel (Contact) is excluded entirely — see CSS: it flows naturally instead of being pinned
+a{ color: inherit; }
 
-  panels.forEach((panel) => {
-    const innerpanel = panel.querySelector('.section-inner');
+img{ max-width: 100%; display:block; }
 
-    // The Experience panel doesn't fake-scroll its content up like the
-    // others — its head (title) stays completely still, and the pinned
-    // scroll distance instead steps the rotating dial through each
-    // entry. Once the dial has stepped through everything, this same
-    // ScrollTrigger flows straight into the normal scale/fade exit
-    // below, so the section releases and the page moves on.
-    const dialArc = panel.querySelector('#exp-dial');
-    if (dialArc) {
-      const stepCount = Math.max(1, document.querySelectorAll('#timeline-fallback .tl-item').length - 1);
-      const windowHeight = panel.clientHeight;
-      // scroll distance dedicated to stepping through the dial —
-      // per-step distance is a fraction of a viewport, so it reads as
-      // deliberate scroll-driven steps rather than a huge dead zone
-      const dialScrollDistance = stepCount * windowHeight * 0.55;
-      // the pin's total scroll range must also reserve one normal
-      // viewport-worth of scroll for the scale/fade exit tween below —
-      // omitting it here was the bug: the exit tween got squeezed into
-      // (and started firing during) the tail of the dial-stepping phase,
-      // which read as the section already moving before the dial was done
-      const dialRatio = dialScrollDistance / (dialScrollDistance + windowHeight);
+/* ---------- oval badge — the signature element ---------- */
+.oval-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:.5rem;
+  padding: .5rem 1.3rem;
+  border: 1px solid var(--espresso);
+  border-radius: 100px;
+  font-family: var(--fb);
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--espresso);
+  background: transparent;
+  white-space: nowrap;
+}
 
-      // Reserve that extra distance as real, scrollable document height.
-      // With pinSpacing:false nothing does this automatically — the other
-      // panels only get away without it when fakeScrollRatio is 0, because
-      // a plain 100vh section already naturally consumes exactly one
-      // viewport-height of scroll on its own. Any *extra* pin duration
-      // beyond that (like dialScrollDistance here) has to be added as
-      // margin-bottom or there's nowhere for that scroll to "land" —
-      // which is why the next section was sliding over the top on its own
-      // natural schedule regardless of whether the dial had finished.
-      panel.style.marginBottom = dialScrollDistance + 'px';
+/* ================= NAV ================= */
+nav{
+  position: fixed; top:0; left:0; width:100%; z-index:100;
+  height: var(--nav-h);
+  box-sizing: border-box;
+  display:flex; align-items:center; justify-content:space-between;
+  padding: 0 2.5rem;
+  background: rgba(225,212,194,0.42);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid rgba(255,255,255,0.25);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.35);
+  transition: box-shadow .3s ease, background .4s ease, border-color .4s ease;
+}
+nav.scrolled{ box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), 0 8px 24px rgba(41,28,14,0.1); }
 
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: panel,
-          start: 'bottom bottom',
-          end: () => `+=${dialScrollDistance + windowHeight}`,
-          pin: true,
-          pinSpacing: false,
-          scrub: 1
-        }
-      });
+/* dark theme — active while the current section (Hero/Contact) is dark-bg,
+   toggled in script.js alongside the nav-underline logic */
+nav.nav-dark{
+  background: rgba(18,11,7,0.38);
+  border-bottom-color: rgba(251,243,231,0.14);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+}
+nav.nav-dark.scrolled{ box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 8px 24px rgba(0,0,0,0.3); }
+nav.nav-dark .nav-logo{ color: #FBF3E7; }
+nav.nav-dark .nav-links a{ color: rgba(251,243,231,0.66); }
+nav.nav-dark .nav-links a:hover{ color: #FBF3E7; }
+nav.nav-dark .nav-links a::after{ background: #D3A376; }
+nav.nav-dark .nav-links a.active{ color: #FBF3E7; }
+nav.nav-dark .nav-resume{ color: #E8C9A0; border-color: rgba(232,201,160,0.5); }
+nav.nav-dark .nav-resume:hover{ background: #E8C9A0; color: #1A0F08; border-color: #E8C9A0; }
+nav .nav-logo, nav .nav-links a, nav .nav-resume{ transition: color .4s ease, border-color .4s ease, background .4s ease; }
 
-      const dialState = { step: 0 };
-      tl.to(dialState, {
-        step: stepCount,
-        duration: 1 / (1 - dialRatio) - 1,
-        ease: 'none',
-        onUpdate: () => {
-          if (window.ExpDial) window.ExpDial.goToIndex(Math.round(dialState.step));
-        }
-      });
+.nav-logo{
+  font-family: var(--fh);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 1.55rem;
+  color: var(--ink);
+  text-decoration: none;
+  letter-spacing: -0.01em;
+}
 
-      tl.fromTo(panel, { scale: 1, opacity: 1 }, { scale: 0.7, opacity: 0.5, duration: 0.9 })
-        .to(panel, { opacity: 0, duration: 0.1 });
+.nav-links{ display:flex; align-items:center; gap: 2.1rem; list-style:none; }
+.nav-links a{
+  color: var(--ink-soft);
+  text-decoration:none;
+  font-size: .83rem;
+  font-weight: 500;
+  letter-spacing:.04em;
+  position: relative;
+  transition: color .3s ease;
+}
+.nav-links a::after{
+  content:''; position:absolute; bottom:-6px; left:0;
+  width:0; height:1px; background: var(--espresso);
+  transition: width .3s ease;
+}
+.nav-links a:hover{ color: var(--ink); }
+.nav-links a:hover::after{ width:100%; }
+.nav-links a.active{ color: var(--ink); }
+.nav-links a.active::after{ width:100%; }
 
-      return;
-    }
+.nav-resume{
+  padding: .48rem 1.2rem !important;
+  font-size: .78rem !important;
+}
+.nav-resume:hover{
+  background: var(--espresso);
+  color: var(--paper-2) !important;
+  border-color: var(--espresso);
+}
+.nav-resume::after{ display:none; }
 
-    // small safety buffer so a slightly-taller-than-measured panel
-    // (e.g. from font metric rounding) still gets fully fake-scrolled
-    const panelHeight = innerpanel.offsetHeight + 48;
-    // use the panel's own clipped height (100vh - nav height), not the raw
-    // window height — otherwise overflow gets under-detected by ~nav-height
-    // and tall sections skip straight to the fade-out with no fake-scroll
-    const windowHeight = panel.clientHeight;
-    const difference = panelHeight - windowHeight;
+.nav-toggle{ display:none; }
 
-    // portion of the scroll distance used for "fake scrolling" through
-    // content taller than one viewport, before the scale/fade transition starts
-    const fakeScrollRatio = difference > 0 ? (difference / (difference + windowHeight)) : 0;
+/* ================= BUTTONS ================= */
+.btn{
+  padding: .85rem 2rem;
+  border-radius: 100px;
+  font-family: var(--fb);
+  font-size: .92rem;
+  font-weight: 600;
+  letter-spacing: .01em;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: .55rem;
+  transition: transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s ease, background .3s ease, color .3s ease, border-color .3s ease;
+  border: 1px solid transparent;
+}
+.btn-primary{
+  background: var(--ink);
+  color: var(--paper-2);
+}
+.btn-primary:hover{
+  transform: translateY(-3px);
+  box-shadow: 0 14px 28px rgba(41,28,14,0.25);
+  background: var(--espresso);
+}
+.btn-secondary{
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--espresso);
+}
+.btn-secondary:hover{
+  transform: translateY(-3px);
+  background: var(--espresso);
+  color: var(--paper-2);
+}
+.btn-ghost{
+  background: transparent;
+  color: var(--espresso);
+  border-color: var(--stone);
+  padding: .78rem 1.6rem;
+}
+.btn-ghost:hover{
+  border-color: var(--espresso);
+  background: var(--paper);
+  transform: translateY(-2px);
+}
 
-    if (fakeScrollRatio) {
-      panel.style.marginBottom = panelHeight * fakeScrollRatio + 'px';
-    }
+/* ================= HERO ================= */
+/* ================= PINNED PANELS ================= */
+.slides-wrapper{
+  margin-top: 0;
+  position: relative;
+  z-index: 1;
+}
 
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: panel,
-        start: 'bottom bottom',
-        end: () => fakeScrollRatio ? `+=${innerpanel.offsetHeight + 48}` : 'bottom top',
-        pin: true,
-        pinSpacing: false,
-        scrub: 1 // smoothed/lagged instead of 1:1 with raw scroll — less "twitchy"
-      }
-    });
+.section{
+  width: 100%;
+  height: 100vh;
+  position: relative;
+  box-sizing: border-box;
+  overflow: hidden;
+  background: var(--sand);
+}
+/* per-panel palette */
+.section-1{ background: #120B07; }
 
-    if (fakeScrollRatio) {
-      tl.to(innerpanel, {
-        yPercent: -100,
-        y: windowHeight,
-        duration: 1 / (1 - fakeScrollRatio) - 1,
-        ease: 'none'
-      });
-    }
+/* Hero sits on a dark backdrop now (to suit the tornado) — everything that
+   was styled for the light cream background needs a light-on-dark pass */
+.section-1 .hero-badge{ color: #E8C9A0; border-color: rgba(232,201,160,0.4); }
+.section-1 .hero-badge .dot{ background: #C9915B; }
+.section-1 .hero-name{ color: #FBF3E7; }
+.section-1 .hero-name em{ color: #D3A376; }
+.section-1 .hero-sub{ color: #D3A376; }
+.section-1 .hero-desc{ color: rgba(251,243,231,0.68); }
+.section-1 .hero-scroll{ color: rgba(251,243,231,0.42); }
+.section-1 .scroll-line{ background: rgba(251,243,231,0.3); }
+.section-1 .btn-primary{ background: #E8C9A0; color: #1A0F08; }
+.section-1 .btn-primary:hover{ background: #D3A376; }
+.section-1 .btn-secondary{ color: #FBF3E7; border-color: rgba(251,243,231,0.4); }
+.section-1 .btn-secondary:hover{ background: rgba(251,243,231,0.12); color: #FBF3E7; }
+.section-2{ background: #100906; }
+.section-3{ background: #100906; }
+.section-3 .section-label{ color: #E8C9A0; border-color: rgba(232,201,160,0.4); }
+.section-3 .section-title{ color: #FBF3E7; }
+.section-3 .section-title em{ color: #D3A376; }
+.section-3 .section-note{ color: rgba(251,243,231,0.55); }
 
-    tl.fromTo(panel, { scale: 1, opacity: 1 }, { scale: 0.7, opacity: 0.5, duration: 0.9 })
-      .to(panel, { opacity: 0, duration: 0.1 });
-  });
+/* About now sits on a dark "black hole" backdrop — same light-on-dark
+   pass as the hero/contact panels above */
+.section-2 .section-label{ color: #E8C9A0; border-color: rgba(232,201,160,0.4); }
+.section-2 .section-title{ color: #FBF3E7; }
+.section-2 .section-title em{ color: #D3A376; }
+.section-4{ background: #100906; }
+.section-4 .section-label{ color: #E8C9A0; border-color: rgba(232,201,160,0.4); }
+.section-4 .section-title{ color: #FBF3E7; }
+.section-4 .section-title em{ color: #D3A376; }
+.section-4 .section-note{ color: rgba(251,243,231,0.55); }
+.section-5{ background: #100906; }
+.particles-bg{
+  position: absolute; inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.particles-bg canvas{ display:block; width:100%; height:100%; }
+.section-5 .section-label{ color: #E8C9A0; border-color: rgba(232,201,160,0.4); }
+.section-5 .section-title{ color: #FBF3E7; }
+.section-5 .section-title em{ color: #D3A376; }
+.section-6{ background: #100906; height: auto; overflow: visible; }
+.section-6 .section-content,
+.section-6 .section-inner{ height: auto; overflow: visible; }
+/* Contact no longer has the old hands-particle band or "find me" footer
+   row, so it needs much less reserved vertical space than the shared
+   defaults. Trimmed further from the original pass — this was still
+   sitting noticeably taller than its content needed. */
+.section-6 .wrapper{ padding-top: 2rem; padding-bottom: 2rem; }
+.section-6 .section-inner.tall{ padding-bottom: 1.5vh; }
 
-  // ---------- Split-text line reveal (autoSplit) ----------
-  // Runs after the pin/margin setup above so trigger positions are
-  // calculated against the final, settled document layout.
-  if (typeof SplitText !== 'undefined') {
-    gsap.registerPlugin(SplitText);
-    gsap.set('.split', { opacity: 1 });
+/* Contact panel is the dark closer — lighten the text that sits
+   directly on its background. .c-link now gets its own glass treatment
+   below (see GLASS SOCIAL LINKS), since it used to carry a light opaque
+   card surface that doesn't fit the now-black background. */
+.section-6 .section-label{ color: var(--paper-2); border-color: var(--paper-2); }
+.section-6 .section-title{ color: var(--paper-2); }
+.section-6 .section-title em{ color: #FFE0B2; }
+.section-6 .contact-intro h3{ color: var(--paper-2); }
+.section-6 .contact-intro p{ color: rgba(251,247,241,0.85); }
 
-    document.querySelectorAll('.split').forEach(text => {
-      SplitText.create(text, {
-        type: 'words,lines',
-        mask: 'lines',
-        linesClass: 'line',
-        autoSplit: true,
-        onSplit: (instance) => {
-          return gsap.from(instance.lines, {
-            yPercent: 120,
-            stagger: 0.1,
-            duration: 0.8,
-            ease: 'power3.out',
-            scrollTrigger: {
-              trigger: text,
-              start: 'top 85%',
-              toggleActions: 'play none none reverse' // play on enter, undo on scroll back past it — replays correctly on repeat visits, unlike scrub inside a pinned/transformed parent
-            }
-          });
-        }
-      });
-    });
-  } else {
-    // SplitText failed to load (e.g. offline) — don't leave text invisible
-    gsap.set('.split', { opacity: 1 });
+.section-content{ position:relative; z-index:1; width:100%; height:100%; }
+.section-inner{ position:relative; width:100%; height:100%; padding-top: var(--nav-h); overflow:hidden; }
+/* was padding-bottom: 8vh — the tall (auto-height) sections were carrying
+   more reserved whitespace at the bottom than their content needed */
+.section-inner.tall{ height:auto; padding-bottom: 4vh; }
+
+.hero-grid{
+  position: relative;
+  z-index: 1;
+  max-width: var(--container);
+  height: 100%;
+  margin: 0 auto;
+  padding: 0 2.5rem;
+  display: grid;
+  grid-template-columns: 1.15fr .85fr;
+  gap: 3rem;
+  align-items: center;
+}
+
+.hero-badge{ margin-bottom: 1.8rem; animation: fadeUp .7s ease both; }
+.hero-badge .dot{
+  width:6px; height:6px; border-radius:50%; background: var(--clay);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse{
+  0%,100%{ box-shadow: 0 0 0 0 rgba(167,141,120,.55); }
+  50%{ box-shadow: 0 0 0 6px rgba(167,141,120,0); }
+}
+
+.hero-name{
+  font-family: var(--fh);
+  font-weight: 600;
+  font-size: clamp(3.1rem, 6.4vw, 5.6rem);
+  line-height: .98;
+  letter-spacing: -0.01em;
+  margin-bottom: 1.3rem;
+  animation: fadeUp .7s .08s ease both;
+}
+.hero-name em{
+  font-style: italic;
+  font-weight: 400;
+  color: var(--espresso);
+}
+
+.hero-sub{
+  font-size: 1.05rem;
+  color: var(--espresso);
+  font-weight: 600;
+  margin-bottom: 1.1rem;
+  animation: fadeUp .7s .16s ease both;
+}
+.hero-desc{
+  font-size: 1rem;
+  color: var(--ink-soft);
+  max-width: 480px;
+  margin-bottom: 2.4rem;
+  animation: fadeUp .7s .24s ease both;
+}
+.hero-btns{
+  display:flex; gap: 1rem; flex-wrap: wrap;
+  animation: fadeUp .7s .32s ease both;
+}
+
+.hero-scroll{
+  margin-top: 3.6rem;
+  display:flex; align-items:center; gap:.7rem;
+  color: var(--ink-faint);
+  font-size: .76rem; letter-spacing:.12em; text-transform:uppercase;
+  animation: fadeUp .7s .5s ease both;
+}
+.scroll-line{ width:38px; height:1px; background: var(--stone); }
+
+/* hero portrait — framed postcard treatment */
+.hero-portrait-wrap{
+  position: relative;
+  display:flex; justify-content:flex-end; align-items:center;
+  animation: fadeUp .8s .2s ease both;
+}
+.hero-tornado-bg{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 0;
+}
+.hero-frame-stack{
+  position:relative;
+  z-index: 2; /* sits above the tornado canvas */
+}
+.hero-frame{
+  position: relative;
+  width: 200px;
+  height: 250px;
+  overflow: hidden;
+}
+.hero-frame-placeholder{
+  position: absolute;
+  top:0; left:0; width:100%; height:100%;
+  display: flex; align-items:center; justify-content:center;
+  background: linear-gradient(160deg, var(--stone), var(--clay));
+  color: var(--paper-2);
+  font-size: 4rem;
+  opacity: 0; /* hidden unless the photo genuinely fails to load — see onerror in index.html */
+}
+.hero-frame img{
+  position: absolute;
+  top:0; left:0; width:100%; height:100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  opacity: 0; /* stays loaded for the canvas to read pixels from — never shown directly */
+}
+.hero-frame .ascii-canvas{
+  position: absolute;
+  top:0; left:0; width:100%; height:100%;
+  display: block;
+  cursor: crosshair;
+}
+.hero-tag{
+  position: absolute;
+  bottom: -14px; left: -18px;
+  transform: rotate(-4deg);
+  background: var(--ink);
+  color: var(--paper-2);
+  z-index: 2;
+}
+.hero-loc{
+  position:absolute; top:-14px; right:-10px;
+  transform: rotate(3deg);
+  background: var(--paper-2);
+  z-index: 2;
+}
+
+/* ================= SECTIONS ================= */
+.wrapper{
+  position: relative; z-index:1;
+  max-width: var(--container);
+  margin: 0 auto;
+  /* was 4.4rem 2.5rem — every wrapper was adding a lot of top/bottom
+     whitespace on top of the section-inner padding above it */
+  padding: 3rem 2.5rem;
+}
+.wrapper + .wrapper{ border-top: 1px solid var(--line); }
+
+.section-head{
+  display:flex; align-items:flex-end; justify-content:space-between;
+  gap: 2rem; margin-bottom: 2.1rem; flex-wrap:wrap;
+}
+.section-label{ margin-bottom: .9rem; }
+.section-title{
+  font-family: var(--fh);
+  font-weight: 600;
+  font-size: clamp(2rem, 3.4vw, 2.85rem);
+  color: var(--ink);
+  letter-spacing: -0.015em;
+}
+.section-title em{ font-style: italic; font-weight:400; color: var(--espresso); }
+.section-note{
+  max-width: 320px;
+  font-size: .88rem;
+  color: var(--ink-soft);
+  text-align: right;
+}
+
+/* ================= ABOUT — "Black Hole" theme ================= */
+/* The disk is confined to a bounded box on the right — not full-bleed —
+   so it reads as "art in a frame" next to the copy rather than taking
+   over the whole panel. Positioned/sized with top+right+bottom so it
+   scales with the section but never overflows it. */
+/* was 620px — taller than the About copy actually needs */
+.section-2 .section-inner.tall{ min-height: 460px; }
+
+.about-ambient{
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(46% 46% at 71% 26%, rgba(230,92,32,0.22), transparent 72%),
+    radial-gradient(60% 55% at 68% 50%, rgba(180,68,26,0.12), transparent 78%);
+}
+/* soft volumetric light falling onto the disk — built from layered
+   radial gradients (not a hard-edged clipped wedge) so it fades out
+   naturally instead of reading as a flat CSS triangle */
+.about-beam{
+  position: absolute;
+  top: -12%;
+  left: 71%;
+  width: 46%;
+  height: 66%;
+  transform: translateX(-50%);
+  background:
+    radial-gradient(ellipse 8% 100% at 50% 0%, rgba(255,214,175,0.4), transparent 68%),
+    radial-gradient(ellipse 22% 90% at 50% 0%, rgba(255,150,85,0.22), transparent 70%),
+    radial-gradient(ellipse 40% 75% at 50% 0%, rgba(255,120,60,0.1), transparent 75%);
+  filter: blur(20px);
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+/* bounded box the disk renders into — resize this to change how big
+   the black hole looks, it will never spill outside these edges */
+.about-blackhole{
+  position: absolute;
+  top: 8%;
+  right: 2%;
+  bottom: 6%;
+  width: 52%;
+  max-width: 660px;
+  max-height: 620px;
+  z-index: 0;
+}
+.about-blackhole canvas{ position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+/* scrim so the text column stays legible over the bright disk — dark
+   behind the copy, fading away toward the disk's core on the right */
+.about-scrim{
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(100deg, rgba(11,7,5,0.9) 0%, rgba(11,7,5,0.68) 30%, rgba(11,7,5,0.2) 48%, rgba(11,7,5,0) 60%);
+}
+
+.about-text{ max-width: 560px; text-align:left; position: relative; }
+.about-text p{ color: rgba(251,243,231,0.62); margin-bottom: 1.1rem; font-size: .98rem; text-shadow: 0 2px 20px rgba(0,0,0,0.5); }
+.about-text p.lede{
+  font-family: var(--fh);
+  font-size: 1.4rem;
+  font-style: italic;
+  color: #FBF3E7;
+  line-height: 1.5;
+  margin-bottom: 1.4rem;
+}
+.about-text .edu-card{ text-align:left; }
+
+.edu-card{
+  margin-top: 1.8rem;
+  padding: 1.7rem 1.9rem;
+  background: rgba(11,7,5,0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(232,201,160,0.22);
+  border-radius: var(--radius-md);
+  position: relative;
+  overflow: hidden;
+  transition: transform .35s ease, box-shadow .35s ease, border-color .35s ease;
+}
+.edu-card::before{
+  content:'';
+  position:absolute; inset:0;
+  background-image: repeating-linear-gradient(135deg, rgba(251,247,241,0.035) 0 2px, transparent 2px 16px);
+  pointer-events:none;
+}
+.edu-card::after{
+  content:'✦';
+  position:absolute; top:1.2rem; right:1.4rem;
+  font-size: 1.2rem; color: #D3A376; opacity:.85;
+}
+.edu-card:hover{
+  transform: translateY(-4px);
+  border-color: rgba(232,201,160,0.4);
+  box-shadow: 0 22px 44px rgba(0,0,0,.45), 0 0 44px rgba(242,166,90,.1);
+}
+.edu-card h4{
+  font-family: var(--fh); font-style: italic; font-weight:600;
+  font-size: 1.18rem; color: #FBF3E7; margin-bottom:.45rem;
+  position:relative; z-index:1; max-width: 90%;
+}
+.edu-card .inst{ color: rgba(251,247,241,0.68); font-size: .87rem; margin:0; position:relative; z-index:1; }
+.edu-card .year{
+  color: #D3A376; font-size: .78rem; margin: .7rem 0 0; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase; position:relative; z-index:1;
+}
+
+/* ================= SKILLS — "Gallery Tunnel" theme ================= */
+/* Fallback tag grid (no-WebGL / reduced-motion) — retinted for the
+   section's new dark backdrop; same shapes as before, light-on-dark. */
+.skills-list{ display:flex; flex-direction:column; }
+.skills-list[hidden]{ display:none; }
+.skill-row{
+  display:grid;
+  grid-template-columns: 220px 1fr;
+  gap: 2rem;
+  padding: 1.5rem 0;
+  border-top: 1px solid rgba(251,243,231,0.12);
+  align-items: center;
+}
+.skills-list .skill-row:last-child{ border-bottom: 1px solid rgba(251,243,231,0.12); }
+.skill-row h3{
+  font-family: var(--fh);
+  font-size: 1.05rem;
+  font-style: italic;
+  font-weight: 500;
+  color: #FBF3E7;
+}
+.skill-tags{ display:flex; flex-wrap:wrap; gap:.55rem; }
+.skill-tag{
+  padding: .38rem .95rem;
+  background: transparent;
+  border: 1px solid rgba(232,201,160,0.3);
+  border-radius: 100px;
+  font-size: .82rem;
+  color: #E8C9A0;
+  cursor: url("astronaut-cursor.cur"), default;
+  transition: all .3s ease;
+}
+.skill-tag:hover{
+  background: #E8C9A0;
+  color: #1A0F08;
+  border-color: #E8C9A0;
+  transform: translateY(-3px);
+}
+
+/* ---- tunnel stage: full-bleed, one continuous depth-zoned tunnel ----
+   this occupies the ENTIRE section -- no card border/shadow/rounded
+   corners, no side-by-side text column. The "Technical Skills" heading
+   lives inside it as a fading intro title card instead of a persistent
+   corner label (see .tunnel-intro below). Category names are baked as
+   real objects inside the Three.js scene (tunnel.js), not DOM text --
+   they fly toward the camera like signage/vehicles coming down the
+   tunnel and fade out as they pass. */
+.section-3{ height: 100vh; }
+.section-3 .section-inner{ height:100%; padding-top:0; }
+.tunnel-stage{
+  position: absolute;
+  inset: 0;
+  background: #0B0705;
+}
+.tunnel-canvas-wrap{ position:absolute; inset:0; }
+.tunnel-canvas-wrap canvas{ position:absolute; inset:0; width:100%; height:100%; display:block; }
+/* soft center veil so on-screen UI (chips/hint) stays legible */
+.tunnel-veil{
+  position:absolute; inset:0; pointer-events:none; z-index:1;
+  background: radial-gradient(ellipse at center, rgba(11,7,5,0.28) 0%, rgba(11,7,5,0.1) 42%, transparent 68%);
+}
+
+/* intro title card -- covers the tunnel solidly on arrival, then fades
+   away (both the text and its backdrop) to reveal the tunnel already
+   in motion behind it, like a curtain lifting */
+.tunnel-intro{
+  position:absolute; inset:0; z-index:5;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap: 1rem;
+  background: #0B0705;
+  transition: opacity 1s ease;
+  opacity: 1;
+  pointer-events: none;
+}
+.tunnel-intro.is-hidden{ opacity: 0; }
+.tunnel-intro-label{
+  font-size: .82rem; letter-spacing:.14em; text-transform:uppercase;
+  color: #E8C9A0; font-weight:600;
+  border: 1px solid rgba(232,201,160,0.4);
+  border-radius: 100px;
+  padding: .5rem 1.1rem;
+}
+.tunnel-intro-title{
+  font-family: var(--fh); font-weight:600;
+  font-size: clamp(2.4rem, 6vw, 4rem);
+  color: #FBF3E7;
+  letter-spacing: -0.015em;
+}
+.tunnel-intro-title em{ font-style: italic; font-weight:400; color: #D3A376; }
+
+.tunnel-topright{
+  position:absolute; top: calc(var(--nav-h) + 1rem); right: 1.8rem; z-index:2;
+  display:flex; flex-direction:column; align-items:flex-end; gap:.6rem;
+}
+.tunnel-hint{
+  font-size: .74rem; color: rgba(251,243,231,0.4);
+  letter-spacing: .02em;
+  pointer-events:none;
+}
+
+/* small pill toggle -- used both in the tunnel view ("Switch to
+   static view") and in the static fallback ("Switch to interactive
+   tunnel"), so the two view modes can always be swapped manually and
+   not only auto-detected via WebGL/reduced-motion support */
+.mode-toggle-btn{
+  pointer-events:auto;
+  background: transparent;
+  border: 1px solid rgba(232,201,160,0.35);
+  color: rgba(251,243,231,0.7);
+  font-family: var(--fb);
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  padding: .4rem .9rem;
+  border-radius: 100px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all .25s ease;
+}
+.mode-toggle-btn:hover, .mode-toggle-btn:focus-visible{
+  border-color: #E8C9A0;
+  color: #FBF3E7;
+  background: rgba(232,201,160,0.1);
+  outline: none;
+}
+.static-head-right{
+  display:flex; flex-direction:column; align-items:flex-end; gap:.9rem;
+}
+
+/* jump-chips — skip straight to a category instead of waiting for
+   the flythrough to reach it */
+.tunnel-chips{
+  position:absolute; left:50%; bottom: 2.2rem; z-index:2;
+  transform: translateX(-50%);
+  display:flex; flex-wrap:wrap; justify-content:center; gap:.7rem;
+  max-width: 92%;
+  pointer-events:auto;
+}
+/* warm glassmorphism — frosted, translucent, glossy top highlight, so
+   the tunnel genuinely blurs through behind each pill */
+.tunnel-chip{
+  position: relative;
+  padding: .55rem 1.15rem;
+  background:
+    linear-gradient(160deg, rgba(255,238,214,0.16) 0%, rgba(255,238,214,0.03) 45%, rgba(0,0,0,0.05) 100%),
+    rgba(30,19,11,0.38);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border: 1px solid rgba(255,255,255,0.22);
+  border-radius: 100px;
+  color: rgba(251,243,231,0.85);
+  font-family: var(--fb);
+  font-size: .8rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.3),
+    inset 0 -6px 10px rgba(0,0,0,0.2),
+    0 8px 22px rgba(0,0,0,0.35);
+  transition: transform .3s ease, border-color .3s ease, background .3s ease, color .3s ease, box-shadow .3s ease;
+}
+.tunnel-chip:hover, .tunnel-chip:focus-visible{
+  transform: translateY(-2px);
+  border-color: rgba(232,201,160,0.6);
+  color: #FBF3E7;
+  outline: none;
+}
+.tunnel-chip.is-active{
+  background:
+    linear-gradient(160deg, rgba(255,238,214,0.3) 0%, rgba(255,238,214,0.06) 45%, rgba(0,0,0,0.06) 100%),
+    rgba(232,201,160,0.22);
+  border-color: rgba(255,238,214,0.75);
+  color: #FBF3E7;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.45),
+    inset 0 -6px 10px rgba(0,0,0,0.15),
+    0 0 26px rgba(242,166,90,0.28),
+    0 8px 22px rgba(0,0,0,0.35);
+}
+
+/* fallback (no-WebGL / reduced-motion) needs its own normal padded
+   section layout, since the tunnel view above has none */
+#skills-fallback{ position:relative; z-index:1; padding: 6rem 2.5rem; }
+
+@media (max-width: 640px){
+  .tunnel-intro-label{ font-size: .72rem; padding:.4rem .9rem; }
+  .tunnel-chips{ gap:.4rem; bottom:.9rem; }
+  .tunnel-chip{ padding:.42rem .85rem; font-size:.74rem; }
+  .tunnel-hint{ top:1.1rem; right:1.1rem; }
+}
+
+/* ================= PROJECTS ================= */
+.projects-list{ display:flex; flex-direction:column; }
+.projects-list[hidden]{ display:none; }
+.project-row{
+  display:grid;
+  grid-template-columns: 64px 1fr;
+  gap: 2rem;
+  padding: 2.6rem 0;
+  border-top: 1px solid rgba(251,243,231,0.12);
+  transition: background .35s ease;
+  position:relative;
+}
+.projects-list .project-row:last-child{ border-bottom: 1px solid rgba(251,243,231,0.12); }
+.project-row::before{
+  content:'';
+  position:absolute; left:-2.5rem; top:0; bottom:0; width:3px;
+  background: #D3A376;
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform .4s ease;
+}
+.project-row:hover::before{ transform: scaleY(1); }
+
+.proj-icon{
+  width:56px; height:56px; border-radius: 50%;
+  border: 1px solid rgba(232,201,160,0.35);
+  display:flex; align-items:center; justify-content:center;
+  font-size: 1.15rem; color: #E8C9A0;
+  transition: background .3s ease, color .3s ease, transform .3s ease;
+}
+.project-row:hover .proj-icon{ background: #E8C9A0; color: #1A0F08; transform: rotate(-8deg); }
+
+.proj-head{
+  display:flex; align-items:baseline; justify-content:space-between; gap:1rem; flex-wrap:wrap;
+  margin-bottom: .6rem;
+}
+.project-row h3{
+  font-family: var(--fh);
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #FBF3E7;
+  letter-spacing: -.01em;
+}
+.proj-date{ font-size: .78rem; color: rgba(251,243,231,0.45); letter-spacing:.06em; text-transform:uppercase; white-space:nowrap; }
+.project-row p{ color: rgba(251,243,231,0.62); font-size: .95rem; max-width: 640px; margin-bottom: 1.3rem; }
+
+.proj-tech{ display:flex; flex-wrap:wrap; gap:.5rem; margin-bottom: 1.4rem; }
+.tech-tag{
+  padding: .25rem .8rem;
+  background: rgba(232,201,160,0.06);
+  border: 1px solid rgba(232,201,160,0.22);
+  border-radius: 100px;
+  font-size: .74rem;
+  color: #E8C9A0;
+}
+.proj-links{ display:flex; gap: .9rem; flex-wrap:wrap; }
+.proj-link{
+  display:inline-flex; align-items:center; gap:.55rem;
+  padding: .65rem 1.35rem;
+  border-radius: 100px;
+  border: 1px solid rgba(232,201,160,0.35);
+  color: #E8C9A0;
+  font-size: .84rem; font-weight: 600;
+  text-decoration:none; letter-spacing:.01em;
+  transition: all .35s cubic-bezier(.2,.8,.2,1);
+}
+.proj-link i{ transition: transform .35s ease; }
+.proj-link:hover{
+  background: #E8C9A0;
+  color: #1A0F08;
+  border-color: #E8C9A0;
+  transform: translateY(-3px);
+  box-shadow: 0 12px 26px rgba(0,0,0,.35);
+}
+.proj-link:hover i{ transform: translate(3px,-2px); }
+.proj-link.demo{ background: rgba(232,201,160,0.16); color: #FBF3E7; border-color: rgba(232,201,160,0.5); }
+.proj-link.demo:hover{ background: #E8C9A0; color: #1A0F08; border-color: #E8C9A0; }
+
+/* ================= PROJECTS — Magnetic Carousel ================= */
+/* Dock-style row of "cover" bars (one per project) that magnify as the
+   cursor nears (see projects-carousel.js), then expand into a modal
+   with the project's full details on click. No real screenshots exist
+   for these projects, so each bar's "cover" is a themed gradient card
+   with the project's icon — same visual language as the edu-card's
+   diagonal-stripe texture used elsewhere, so it reads as part of the
+   same site rather than a bolted-on component. */
+.proj-carousel{ position: relative; margin-bottom: 1rem; }
+.proj-carousel[hidden]{ display:none; }
+.proj-bars{
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  gap: 16px;
+  padding: 1rem 0 1.6rem;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+.proj-bars::-webkit-scrollbar{ display:none; }
+
+.proj-bar{
+  position: relative;
+  flex-shrink: 0;
+  border-radius: 18px;
+  overflow: hidden;
+  cursor: pointer;
+  /* translucent instead of opaque — was previously a solid gradient,
+     which fully hid the Glitter Wrap starfield behind it, and hid even
+     more of it as a card grew on hover. backdrop-filter keeps the card
+     readable while still letting stars glimmer through underneath. */
+  background: linear-gradient(155deg, rgba(42,22,13,0.82) 0%, rgba(18,11,7,0.85) 65%, rgba(11,7,5,0.88) 100%);
+  backdrop-filter: blur(1.5px);
+  -webkit-backdrop-filter: blur(1.5px);
+  border: 1px solid rgba(232,201,160,0.18);
+  box-shadow: 0 20px 40px rgba(0,0,0,.35);
+  transition: filter .4s ease, opacity .4s ease, box-shadow .3s ease, border-color .3s ease, background .3s ease;
+}
+.proj-bar::after{
+  content:'';
+  position:absolute; inset:0;
+  background-image: repeating-linear-gradient(135deg, rgba(251,247,241,0.035) 0 2px, transparent 2px 16px);
+  pointer-events:none;
+}
+.proj-bar:hover{
+  border-color: rgba(232,201,160,0.4);
+  /* a touch more transparent on hover, since the card is also bigger then */
+  background: linear-gradient(155deg, rgba(42,22,13,0.72) 0%, rgba(18,11,7,0.76) 65%, rgba(11,7,5,0.8) 100%);
+}
+.proj-bar-icon{
+  position:absolute; top:44%; left:50%; transform:translate(-50%,-50%);
+  font-size: 2.4rem;
+  color: rgba(232,201,160,0.5);
+  filter: drop-shadow(0 8px 20px rgba(0,0,0,.4));
+  transition: color .3s ease;
+  pointer-events:none;
+}
+.proj-bar:hover .proj-bar-icon{ color:#F2D9B8; }
+.proj-bar-label{
+  position:absolute; left:50%; bottom: 16px; transform: translateX(-50%);
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font-family: var(--fh); font-style:italic; font-weight:600;
+  font-size: .92rem; letter-spacing:.02em;
+  color: rgba(251,243,231,0.78);
+  white-space:nowrap;
+  pointer-events:none;
+  max-height: 65%;
+  overflow:hidden;
+}
+
+.proj-carousel.has-open .proj-bar:not(.is-open){
+  filter: blur(6px);
+  opacity: .35;
+}
+.proj-bar.is-open{ z-index: 2; }
+
+.proj-backdrop{
+  position: fixed; inset:0; z-index: 400;
+  background: rgba(6,4,2,0.72);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  opacity: 0;
+  pointer-events:none;
+  transition: opacity .4s ease;
+}
+.proj-backdrop.is-visible{ opacity:1; pointer-events:auto; }
+
+.proj-modal{
+  position: fixed; z-index: 401;
+  top:50%; left:50%;
+  transform: translate(-50%,-50%) scale(.94);
+  width: min(880px, 92vw);
+  max-height: 86vh;
+  overflow-y:auto;
+  background: linear-gradient(160deg, #1c120a 0%, #0c0705 100%);
+  border: 1px solid rgba(232,201,160,0.28);
+  border-radius: 24px;
+  box-shadow: 0 40px 90px rgba(0,0,0,.55);
+  opacity: 0;
+  pointer-events:none;
+  transition: opacity .35s ease, transform .35s cubic-bezier(.2,.9,.25,1);
+}
+.proj-modal.is-visible{
+  opacity:1; pointer-events:auto;
+  transform: translate(-50%,-50%) scale(1);
+}
+.proj-modal-cover{
+  height: 190px;
+  position: relative;
+  display:flex; align-items:center; justify-content:center;
+  background: linear-gradient(155deg, #2a160d 0%, #120b07 65%, #0b0705 100%);
+  border-bottom: 1px solid rgba(232,201,160,0.18);
+}
+.proj-modal-cover::after{
+  content:'';
+  position:absolute; inset:0;
+  background-image: repeating-linear-gradient(135deg, rgba(251,247,241,0.035) 0 2px, transparent 2px 16px);
+}
+.proj-modal-cover i{
+  font-size: 3.6rem;
+  color: rgba(232,201,160,0.55);
+  position:relative; z-index:1;
+}
+.proj-modal-close{
+  position:absolute; top:1.1rem; right:1.1rem; z-index:2;
+  width:38px; height:38px; border-radius:50%;
+  background: rgba(11,7,5,0.6);
+  border: 1px solid rgba(232,201,160,0.35);
+  color:#FBF3E7;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer;
+  font-size: .95rem;
+  transition: all .25s ease;
+}
+.proj-modal-close:hover{ background:#E8C9A0; color:#1A0F08; border-color:#E8C9A0; }
+.proj-modal-body{ padding: 2rem 2.2rem 2.4rem; }
+.proj-modal-body .proj-head{ margin-bottom:.8rem; }
+.proj-modal-body h3{ font-family:var(--fh); font-size:1.7rem; font-weight:600; color:#FBF3E7; }
+.proj-modal-body p{ color: rgba(251,243,231,0.65); font-size:.98rem; line-height:1.6; margin-bottom:1.3rem; }
+
+@media (max-width: 640px){
+  .proj-bars{ justify-content:flex-start; gap:12px; }
+  .proj-modal-body{ padding: 1.6rem 1.4rem 2rem; }
+}
+
+/* ================= EXPERIENCE — rotating dial ================= */
+/* A semicircle bleeding off the left edge, numbered by month/year,
+   that rotates like a clock face as you scroll — the item nearest
+   the marker becomes "active" and its details show in the panel to
+   the right. Built by JS (experience-dial.js) from the accessible
+   .timeline list below, which stays as the no-JS/reduced-motion
+   fallback. */
+.exp-dial{
+  position: relative;
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  align-items: center;
+  gap: 3rem;
+  min-height: 380px;
+  margin-left: -2.5rem;
+}
+.exp-dial[hidden]{ display:none; }
+
+.exp-arc{
+  position: relative;
+  height: 380px;
+  overflow: hidden;
+  touch-action: pan-y;
+}
+/* the actual circle the numbers travel around — most of it sits off
+   to the left outside the container and gets clipped, so only the
+   right-hand slice reads as a semicircle, exactly like a clock face */
+.exp-arc-circle{
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(232,201,160,0.28);
+  box-shadow: inset 0 0 40px rgba(211,163,118,0.05);
+  pointer-events: none;
+}
+.exp-arc-tick{
+  position: absolute;
+  top: 0; left: 0;
+  width: 14px;
+  height: 1px;
+  background: rgba(232,201,160,0.35);
+  pointer-events: none;
+  transform-origin: 0 50%;
+  transition: left .55s cubic-bezier(.2,.8,.2,1), top .55s cubic-bezier(.2,.8,.2,1), opacity .35s ease, background .3s ease;
+}
+.exp-arc-number{
+  position: absolute;
+  top: 0; left: 0;
+  font-family: var(--fh);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: rgba(251,243,231,0.32);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  /* anchored by its right (trailing) edge — see experience-dial.js —
+     so longer labels like "May 2026" grow away from the marker dot
+     instead of growing on top of it */
+  transform-origin: 100% 50%;
+  transition: transform .55s cubic-bezier(.2,.8,.2,1), color .35s ease, font-size .35s ease, opacity .35s ease;
+}
+.exp-arc-number.is-active{
+  color: #FBF3E7;
+  font-size: 1.18rem;
+}
+/* fixed marker showing where the "active" slot always sits */
+.exp-arc-marker{
+  position:absolute; top:50%; right: 8px; transform: translateY(-50%);
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #D3A376;
+  box-shadow: 0 0 12px rgba(211,163,118,0.7);
+}
+.exp-arc-marker::before{
+  content:'';
+  position:absolute; top:50%; right: 14px; transform: translateY(-50%);
+  /* length set per-frame by experience-dial.js from the active
+     label's own width, so the line always reaches just past the
+     start of the text instead of a fixed length that under/over-shoots */
+  width: var(--needle-len, 220px); height: 1px;
+  transition: width .55s cubic-bezier(.2,.8,.2,1);
+  background: linear-gradient(to left, rgba(211,163,118,0.4), transparent);
+}
+
+/* the little "click" wobble that plays every time the dial advances */
+@keyframes expDialShake{
+  0%{ transform: translateX(0) rotate(0); }
+  22%{ transform: translateX(-5px) rotate(-.5deg); }
+  46%{ transform: translateX(4px) rotate(.4deg); }
+  68%{ transform: translateX(-2px) rotate(-.2deg); }
+  100%{ transform: translateX(0) rotate(0); }
+}
+.exp-arc.is-shaking{ animation: expDialShake .42s ease; }
+
+.exp-panel{
+  transition: opacity .25s ease, transform .25s ease;
+}
+.exp-panel-label{
+  font-family: var(--fh); font-style: italic; font-weight:600;
+  font-size: clamp(2.4rem, 4vw, 3.4rem);
+  color: #D3A376;
+  line-height: 1;
+  margin-bottom: 1rem;
+}
+.exp-panel-title{
+  font-family: var(--fh); font-size: 1.35rem; font-weight:600;
+  color: #FBF3E7; margin-bottom: .25rem;
+}
+.exp-panel-org{ font-size: .92rem; color: rgba(251,243,231,0.55); font-style: italic; margin-bottom: .9rem; }
+.exp-panel-desc{ font-size: .95rem; color: rgba(251,243,231,0.62); line-height: 1.75; max-width: 560px; }
+.exp-panel-date{
+  display:inline-block;
+  font-size: .72rem; color: #E8C9A0; letter-spacing:.1em; text-transform:uppercase; font-weight:600;
+  border: 1px solid rgba(232,201,160,0.35); border-radius:100px;
+  padding: .3rem .8rem; margin-bottom: .9rem;
+}
+
+@media (max-width: 760px){
+  .exp-dial{ grid-template-columns: 130px 1fr; min-height: 380px; margin-left: -1.5rem; }
+  .exp-arc{ height: 380px; }
+  .exp-arc-marker::before{ width: 80px; }
+  .exp-panel-label{ font-size: clamp(2rem, 8vw, 2.6rem); }
+}
+
+/* ================= TIMELINE (accessible fallback) ================= */
+.timeline{ position:relative; padding-left: 2.2rem; }
+.timeline[hidden]{ display:none; }
+.timeline::before{
+  content:''; position:absolute; left:0; top:.4rem; bottom:.4rem; width:1px;
+  background: linear-gradient(to bottom, #D3A376, rgba(251,243,231,0.15) 85%, transparent);
+}
+.tl-item{ position:relative; margin-bottom: 3rem; }
+.tl-item:last-child{ margin-bottom:0; }
+.tl-dot{
+  position:absolute; left:-2.56rem; top:.4rem;
+  width:11px; height:11px; border-radius:50%;
+  background: #100906; border: 2px solid #D3A376;
+  transition: background .3s ease;
+}
+.tl-item:hover .tl-dot{ background: #D3A376; }
+.tl-date{ font-size: .74rem; color: #D3A376; letter-spacing:.12em; font-weight:600; text-transform:uppercase; margin-bottom:.35rem; }
+.tl-title{ font-family: var(--fh); font-size: 1.22rem; font-weight:600; color: #FBF3E7; margin-bottom:.2rem; }
+.tl-org{ font-size: .89rem; color: rgba(251,243,231,0.6); margin-bottom:.6rem; font-style:italic; }
+.tl-desc{ font-size: .89rem; color: rgba(251,243,231,0.6); line-height:1.8; max-width: 620px; }
+
+/* ================= CONTACT ================= */
+/* text column only now — the black hole video renders in its own full-bleed
+   layer (see INTERSTELLAR VIDEO below), so this no longer needs to be a
+   two-column grid, just a capped-width block sitting above it */
+.contact-grid{ position: relative; z-index: 1; max-width: 560px; }
+.contact-intro h3{
+  font-family: var(--fh); font-style: italic; font-weight:500;
+  font-size: 1.7rem; color: var(--ink); margin-bottom: .9rem; letter-spacing:-.01em;
+}
+/* was 2.2rem — trimmed along with the rest of the section's padding */
+.contact-intro p{ color: var(--ink-soft); font-size: .96rem; margin-bottom: 1.4rem; line-height: 1.8; max-width: 460px; }
+
+/* was .85rem gap */
+.contact-links{ display:flex; flex-direction:column; gap: .6rem; }
+/* GLASS SOCIAL LINKS — frosted/translucent instead of the opaque cream
+   card these used elsewhere, so the starfield (and the black hole video)
+   show through faintly behind them rather than blocking it with a solid card */
+.c-link{
+  display:flex; align-items:center; gap: 1rem;
+  padding: .85rem 1.25rem;
+  background: rgba(255,255,255,0.11);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(255,255,255,0.24);
+  border-radius: var(--radius-sm);
+  text-decoration:none;
+  transition: all .3s ease;
+}
+.c-link:hover{ border-color: rgba(232,201,160,0.65); transform: translateX(6px); background: rgba(255,255,255,0.16); }
+.c-icon{
+  width:42px; height:42px; border-radius:50%;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.22);
+  display:flex; align-items:center; justify-content:center;
+  color: var(--paper-2); font-size: 1rem; flex-shrink:0;
+  transition: background .3s ease, color .3s ease, border-color .3s ease;
+}
+.c-link:hover .c-icon{ background: var(--clay); color: var(--ink); border-color: var(--clay); }
+.c-info p:first-child{ font-weight:600; color: var(--paper-2); font-size: .87rem; margin:0; }
+.c-info p:last-child{ color: rgba(251,247,241,0.6); font-size: .78rem; margin:0; }
+
+.contact-card{
+  background: var(--ink);
+  color: var(--paper-2);
+  border-radius: var(--radius-lg);
+  padding: 2.8rem 2.4rem;
+  text-align:left;
+  position:relative;
+  overflow:hidden;
+}
+.contact-card::after{
+  content:'✦';
+  position:absolute; top:1.6rem; right:1.8rem;
+  font-size: 1.4rem; color: var(--clay); opacity:.7;
+}
+.contact-card h4{ font-family: var(--fh); font-size: 1.5rem; font-weight:600; margin-bottom: .9rem; max-width: 320px; }
+.contact-card p{ color: rgba(251,247,241,0.68); font-size: .9rem; margin-bottom: 2.1rem; line-height: 1.8; max-width: 340px; }
+.contact-card .btn-primary{ background: var(--paper-2); color: var(--ink); }
+.contact-card .btn-primary:hover{ background: var(--clay); color: var(--ink); }
+
+/* CTA button moved out of the old contact-card onto the section's own dark
+   background directly — glass treatment matching the hero's Download
+   Resume button: transparent with a light border plus a touch of blur,
+   instead of the previous solid opaque cream fill. */
+.contact-cta.btn-primary{
+  margin-top: 1.2rem;
+  background: rgba(251,243,231,0.08);
+  backdrop-filter: blur(10px) saturate(140%);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
+  border: 1px solid rgba(251,243,231,0.4);
+  color: #FBF3E7;
+}
+.contact-cta.btn-primary:hover{
+  background: rgba(251,243,231,0.18);
+  border-color: #FBF3E7;
+  color: #FBF3E7;
+  transform: translateY(-3px);
+}
+
+/* ================= LIQUID VORTEX (contact section) =================
+   Full-bleed across the whole section (like the Glitter Wrap layer
+   beneath it) rather than a boxed container — a boxed wrapper was
+   visibly clipping the shader at its edge. The shader's own gaussian
+   falloff (see liquid-vortex.js) fades it out naturally; data-offset-x
+   on the canvas shifts the swirl's visual centre toward the right so
+   it still reads as "on the right side" without a hard boundary. */
+.contact-vortex-canvas{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  display: block;
+  pointer-events: auto; /* the shader speeds up on hover — see liquid-vortex.js */
+}
+
+/* Keep the Contact copy safely above the starfield/vortex layers. */
+.section-6 .section-head,
+.section-6 .contact-grid{
+  position: relative;
+  z-index: 2;
+}
+
+/* The left side (where the socials live) stays a bit darker for
+   contrast, but much lighter than before — the previous gradient was
+   crushing the text and cards to near-black. */
+.section-6::after{
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(16,9,6,.62) 0%,
+      rgba(16,9,6,.42) 32%,
+      rgba(16,9,6,.16) 52%,
+      rgba(16,9,6,.02) 70%,
+      transparent 84%
+    );
+}
+
+@media (max-width: 640px){
+  .section-6::after{
+    background:
+      linear-gradient(
+        180deg,
+        rgba(16,9,6,.22) 0%,
+        rgba(16,9,6,.6) 55%,
+        rgba(16,9,6,.82) 100%
+      );
   }
+}
 
-  ScrollTrigger.refresh();
-});
+/* ================= FOOTER ================= */
+/* Glass treatment matching the Download Resume button in the hero —
+   transparent-with-border rather than a solid fill, plus a touch of
+   backdrop-filter blur (same recipe as the nav bar and the tunnel
+   chips) so it reads as a frosted pane, not a flat opaque strip. This
+   replaces the previous solid light-cream footer, which cut a hard
+   bright bar across the bottom of an otherwise all-dark page. */
+footer{
+  position: relative; z-index:1;
+  border-top: 1px solid rgba(255,255,255,0.16);
+  padding: 2.4rem 2.5rem;
+  display:flex; align-items:center; justify-content:space-between;
+  flex-wrap:wrap; gap: 1rem;
+  background: rgba(16,9,6,0.55);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  color: rgba(251,243,231,0.65);
+  font-size: .83rem;
+}
+footer .name{ color: #FBF3E7; font-weight:600; font-family: var(--fh); font-style:italic; }
+footer .foot-links{ display:flex; gap: 1.4rem; }
+footer .foot-links a{ color: rgba(251,243,231,0.65); text-decoration:none; transition: color .3s ease; }
+footer .foot-links a:hover{ color: #FBF3E7; }
+
+/* ================= ANIMATIONS ================= */
+/* ================= SPLIT-TEXT LINE REVEAL ================= */
+/* hidden until JS runs SplitText + sets opacity:1, then each line
+   masks/slides in on scroll — see script.js */
+.split{ opacity: 0; will-change: transform; }
+.split *{ will-change: transform; }
+
+@keyframes fadeUp{ from{ opacity:0; transform: translateY(26px);} to{ opacity:1; transform: translateY(0);} }
+.reveal{ opacity:0; transform: translateY(30px); transition: opacity .75s ease, transform .75s ease; }
+.reveal.visible{ opacity:1; transform: translateY(0); }
+
+@media (prefers-reduced-motion: reduce){
+  .reveal{ opacity:1; transform:none; transition:none; }
+  .split{ opacity:1; }
+  *{ animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+}
+
+/* ================= SCROLLBAR ================= */
+/* dark track to match the site (was --sand, a light beige left over
+   from before the dark hero/about/contact panels existed) */
+html{ scrollbar-color: var(--clay) var(--ink); scrollbar-width: thin; }
+::-webkit-scrollbar{ width:9px; }
+::-webkit-scrollbar-track{ background: var(--ink); }
+::-webkit-scrollbar-thumb{ background: var(--clay); border-radius:10px; border:2px solid var(--ink); }
+::-webkit-scrollbar-thumb:hover{ background: var(--espresso); }
+
+/* ================= FOCUS ================= */
+a:focus-visible, button:focus-visible{
+  outline: 2px solid var(--espresso);
+  outline-offset: 3px;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 900px){
+  .hero-grid{ grid-template-columns: 1fr; padding: 2rem 1.5rem; gap: 1.5rem; }
+  .section-1 .section-inner{ height:auto; padding-bottom: 6vh; }
+  .hero-portrait-wrap{ order:-1; justify-content:center; margin-bottom: 1rem; }
+  .hero-frame{ width: 170px; height: 212px; }
+  .section-2 .section-inner.tall{ min-height: 0; padding-bottom: 2rem; }
+  .about-blackhole{
+    top: 4%; right: auto; left: 50%; bottom: auto;
+    width: 78%; max-width: 300px; height: 34%; min-height: 220px;
+    transform: translateX(-50%);
+  }
+  .about-beam{ left: 50%; width: 70%; height: 42%; }
+  .about-ambient{
+    background:
+      radial-gradient(60% 34% at 50% 14%, rgba(230,92,32,0.24), transparent 74%),
+      radial-gradient(70% 40% at 50% 26%, rgba(180,68,26,0.12), transparent 78%);
+  }
+  .about-scrim{
+    background: linear-gradient(180deg, rgba(11,7,5,0.25) 0%, rgba(11,7,5,0.1) 16%, rgba(11,7,5,0.55) 32%, rgba(11,7,5,0.94) 44%, rgba(11,7,5,0.97) 100%);
+  }
+  .about-text{ max-width: none; text-align:center; }
+  .about-text .edu-card{ text-align:left; }
+  .skill-row{ grid-template-columns: 1fr; gap: .7rem; }
+}
+
+@media (max-width: 768px){
+  .nav-links{ display:none; }
+  .wrapper{ padding: 3rem 1.5rem; }
+  .project-row{ grid-template-columns: 1fr; gap: 1rem; }
+  .proj-icon{ display:none; }
+  .section-note{ display:none; }
+}
+/* ================= CUSTOM CURSOR ================= */
+/* Astronaut cursor set (user-supplied .cur files). Declared last in the
+   file so it wins the cascade over the individual cursor:pointer rules
+   above for the same elements (same specificity — last one wins). Each
+   rule falls back to the normal system arrow/pointer if the .cur file
+   ever fails to load. */
+html, body{
+  cursor: url("astronaut-cursor.cur"), auto;
+}
+a, button, input, textarea, select, label,
+[role="button"], [tabindex],
+.btn, .proj-bar, .c-link, .tl-item, .exp-arc-number,
+.mode-toggle-btn, .tunnel-chip, .proj-modal-close{
+  cursor: url("astronaut-pointer.cur"), pointer;
+}
